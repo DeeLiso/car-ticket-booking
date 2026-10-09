@@ -93,7 +93,8 @@ Open <http://localhost:5173>. Vite proxies `/api` to `http://localhost:8000`.
 # backend tests (from backend/)
 $env:PYTHONPATH='.'; ..\.venv\Scripts\python.exe -m pytest
 
-# frontend typecheck + build (from frontend/)
+# frontend lint + typecheck + build (from frontend/)
+npm run lint
 npm run typecheck
 npm run build
 ```
@@ -142,4 +143,4 @@ Backend tests live in `backend/tests/` and run against an isolated SQLite file (
 
 ## License / status
 
-Phase 1–10 complete (backend + all three portals). Phase 11 (Docker, docs) in progress; see `PROJECT_PROGRESS.md`.
+Phases 1–12 complete — backend + all three portals + Docker/deployment docs + polish/a11y + ESLint. See `PROJECT_PROGRESS.md`.

@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { SearchForm, normalizeSearchParams } from "@/components/forms/SearchForm";
 import { Badge } from "@/components/common/Badge";
 import { Card, EmptyState } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { ListSkeleton } from "@/components/common/Skeleton";
 import { Select, Field } from "@/components/common/Field";
 import { tripsApi } from "@/services/endpoints";
 import { durationText, fmtClock, fmtMoney, fmtDate } from "@/utils/format";
@@ -15,7 +16,6 @@ import type { TripSummary } from "@/types";
 type SortKey = "price" | "departure" | "duration";
 
 export function SearchPage() {
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const initial = useMemo(() => normalizeSearchParams(Object.fromEntries(searchParams.entries())), [searchParams]);
   const [query, setQuery] = useState(initial);
@@ -36,7 +36,6 @@ export function SearchPage() {
   });
 
   const trips = data?.items ?? [];
-  const inFlight = location.search.includes("departure_date");
 
   return (
     <div id="main" tabIndex={-1} className="min-h-screen outline-none">
@@ -86,7 +85,12 @@ export function SearchPage() {
         </div>
 
         {error && <InlineError message={(error as Error).message} onRetry={refetch} />}
-        {isLoading && <PageLoader label="Searching trips…" />}
+        {isLoading && (
+          <div role="status" aria-live="polite">
+            <span className="sr-only">Searching trips…</span>
+            <ListSkeleton rows={4} />
+          </div>
+        )}
         {!isLoading && trips.length === 0 && (
           <EmptyState
             icon="🚌"

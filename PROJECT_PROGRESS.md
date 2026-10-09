@@ -20,8 +20,8 @@ Premium car & bus ticket booking platform. React/Vite/TS frontend + FastAPI back
 - [x] **Phase 8** — Frontend: booking management, mock payment flow, ticket view (QR/PDF).
 - [x] **Phase 9** — Operator portal (buses/trips/manifest/scan validate).
 - [x] **Phase 10** — Admin portal (dashboard/operators/routes/buses/trips/refunds/reports/audit).
-- [ ] **Phase 11** — Docker (compose + Dockerfiles), README, deployment docs.
-- [ ] **Phase 12** — Polish, error states, loading skeletons, a11y.
+- [x] **Phase 11** — Docker (compose + Dockerfiles + nginx.conf, `.dockerignore`s), root `README.md`, `docs/DEPLOYMENT.md`, root `.env.example`. `docker compose config` not run locally (no Docker CLI on this machine); files verified by inspection.
+- [x] **Phase 12** — Polish + a11y: error states (`InlineError` + retry everywhere), loading skeletons (`src/components/common/Skeleton.tsx`: `ListSkeleton`/`TableSkeleton`/`StatGridSkeleton`/`ChartSkeleton`/`DetailSkeleton` wired into every data page), `ErrorBoundary` wrapping `App` and the `AppShell` outlet, empty states, skip-link + visible focus + aria labels. ESLint added (`eslint.config.js` + `npm run lint`, flat config w/ typescript-eslint + react-hooks; 0 errors, 3 fast-refresh warnings), and existing dead imports / hook-order / chart-mutation issues were cleaned up.
 
 ## Backend notes
 
@@ -48,4 +48,4 @@ Premium car & bus ticket booking platform. React/Vite/TS frontend + FastAPI back
 
 ## Next step
 
-Phase 6–10 are complete; backend (46 tests) and frontend (`npm run typecheck` + build) are green. Remaining work: **Phase 11** (Docker: compose + Dockerfiles, root README, deployment docs), **Phase 12** (polish: loading skeletons/error states/a11y), and an initial `.gitignore` (repo has no commits yet).
+Phases 1–12 are complete. Backend: 46 tests green. Frontend: `npm run lint` (0 errors), `npm run typecheck` and `npm run build` all green. Docker/README/deployment docs shipped in the repo; the initial commit (`ff531d1`) is in. Follow-up options are listed in `README.md` — e.g. wiring up real payment provider network calls, adding a CI pipeline, or a frontend test suite.

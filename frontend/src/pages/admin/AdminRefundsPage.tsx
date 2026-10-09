@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
 import { Button } from "@/components/common/Button";
 import { adminApi } from "@/services/endpoints";
 import { fmtDateTime, fmtMoney } from "@/utils/format";
@@ -22,7 +23,12 @@ export function AdminRefundsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-refunds"] }),
   });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading)
+    return (
+      <SkeletonPage label="Loading refunds">
+        <TableSkeleton columns={6} rows={5} />
+      </SkeletonPage>
+    );
   if (q.error)
     return (
       <div className="px-8 py-10">

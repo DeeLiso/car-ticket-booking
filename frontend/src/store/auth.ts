@@ -39,5 +39,7 @@ export const useAuthStore = create<AuthState>()(
 );
 
 export function useIsAuthenticated(): boolean {
-  return Boolean(useAuthStore((s) => s.accessToken) && useAuthStore((s) => s.user));
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const user = useAuthStore((s) => s.user);
+  return Boolean(accessToken && user);
 }

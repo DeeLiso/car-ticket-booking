@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { ListSkeleton, SkeletonPage, StatGridSkeleton } from "@/components/common/Skeleton";
 import { operatorApi } from "@/services/endpoints";
 import { StatCard } from "@/components/dashboard/Stat";
 import { fmtClock, fmtMoney } from "@/utils/format";
@@ -11,7 +12,14 @@ export function OperatorDashboardPage() {
   const stats = useQuery({ queryKey: ["op-stats"], queryFn: operatorApi.stats });
   const trips = useQuery({ queryKey: ["op-trips"], queryFn: operatorApi.trips });
 
-  if (stats.isLoading || trips.isLoading) return <PageLoader />;
+  if (stats.isLoading || trips.isLoading)
+    return (
+      <SkeletonPage label="Loading dashboard">
+        <StatGridSkeleton count={4} />
+        <h2 className="mb-4 mt-8 font-display text-lg font-bold text-navy-900">Upcoming trips</h2>
+        <ListSkeleton rows={3} />
+      </SkeletonPage>
+    );
   if (stats.error || trips.error)
     return (
       <div className="px-8 py-10">

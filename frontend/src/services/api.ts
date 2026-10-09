@@ -1,6 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { API_BASE, TOKEN_STORAGE_KEY } from "@/config";
-import { useAuthStore, type StoredSession } from "@/store/auth";
+import { useAuthStore } from "@/store/auth";
 
 export const api = axios.create({
   baseURL: API_BASE,

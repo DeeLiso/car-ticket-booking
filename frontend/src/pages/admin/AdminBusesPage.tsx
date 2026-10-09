@@ -1,13 +1,18 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
 import { adminApi } from "@/services/endpoints";
 
 export function AdminBusesPage() {
   const buses = useQuery({ queryKey: ["admin-buses"], queryFn: () => adminApi.buses(1, 20) });
 
-  if (buses.isLoading) return <PageLoader />;
+  if (buses.isLoading)
+    return (
+      <SkeletonPage label="Loading buses">
+        <TableSkeleton columns={6} rows={6} />
+      </SkeletonPage>
+    );
   if (buses.error)
     return (
       <div className="px-8 py-10">

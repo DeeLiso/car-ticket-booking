@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { initials } from "@/utils/format";
 
 interface NavItem {
@@ -159,7 +160,9 @@ export function AppShell() {
       </header>
 
       <main id="main" tabIndex={-1} className="outline-none lg:pl-64">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
     </div>
   );

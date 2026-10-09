@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
 import { Card, EmptyState, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { ListSkeleton, SkeletonPage } from "@/components/common/Skeleton";
 import { Button } from "@/components/common/Button";
 import { bookingsApi, ticketsApi } from "@/services/endpoints";
 import { fmtDateTime, fmtMoney, fmtClock, fmtDate } from "@/utils/format";
@@ -20,7 +21,12 @@ export function MyBookingsPage({ tickets = false }: { tickets?: boolean }) {
 
   if (tickets) return <TicketListPage />;
 
-  if (bookings.isLoading) return <PageLoader />;
+  if (bookings.isLoading)
+    return (
+      <SkeletonPage label="Loading your bookings">
+        <ListSkeleton rows={4} />
+      </SkeletonPage>
+    );
   if (bookings.error) return <InlineError message={(bookings.error as Error).message} onRetry={() => bookings.refetch()} />;
 
   const data = bookings.data!;

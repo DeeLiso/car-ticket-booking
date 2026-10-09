@@ -60,7 +60,7 @@ export function AreaChart({
   const padX = 24;
   const padY = 20;
 
-  const { points, max, path, area, coords } = useMemo(() => {
+  const { points, path, area, coords } = useMemo(() => {
     const values = data.map((d) => d.value);
     const maxV = Math.max(1, ...values);
     const stepX = data.length > 1 ? (width - padX * 2) / (data.length - 1) : 0;
@@ -73,7 +73,7 @@ export function AreaChart({
     const areaPath = c.length
       ? `${line} L${c[c.length - 1]!.x},${height - padY} L${c[0]!.x},${height - padY} Z`
       : "";
-    return { points: values, max: maxV, path: line, area: areaPath, coords: c };
+    return { points: values, path: line, area: areaPath, coords: c };
   }, [data, height]);
 
   if (!data.length) return <p className="py-10 text-center text-sm text-navy-400">No data yet.</p>;
@@ -160,12 +160,10 @@ export function DonutChart({
 
   if (!data.length) return <p className="py-10 text-center text-sm text-navy-400">No data yet.</p>;
 
-  let offset = 0;
   const segments = data.map((d, i) => {
     const fraction = d.value / total;
-    const seg = { ...d, fraction, offset, color: PALETTE[i % PALETTE.length]! };
-    offset += fraction;
-    return seg;
+    const offset = data.slice(0, i).reduce((sum, prev) => sum + prev.value / total, 0);
+    return { ...d, fraction, offset, color: PALETTE[i % PALETTE.length]! };
   });
 
   return (

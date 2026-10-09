@@ -2,14 +2,20 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
 import { Card, EmptyState, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { ListSkeleton, SkeletonPage } from "@/components/common/Skeleton";
 import { operatorApi } from "@/services/endpoints";
 import { fmtClock, fmtDate, fmtMoney } from "@/utils/format";
 
 export function OperatorTripsPage() {
   const q = useQuery({ queryKey: ["op-trips"], queryFn: operatorApi.trips });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading)
+    return (
+      <SkeletonPage label="Loading trips">
+        <ListSkeleton rows={4} />
+      </SkeletonPage>
+    );
   if (q.error)
     return (
       <div className="px-8 py-10">

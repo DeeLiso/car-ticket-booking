@@ -1,13 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
 import { adminApi } from "@/services/endpoints";
 import { fmtDateTime } from "@/utils/format";
 
 export function AdminAuditPage() {
   const q = useQuery({ queryKey: ["admin-audit"], queryFn: adminApi.auditLogs });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading)
+    return (
+      <SkeletonPage label="Loading audit logs">
+        <TableSkeleton columns={6} rows={8} />
+      </SkeletonPage>
+    );
   if (q.error)
     return (
       <div className="px-8 py-10">

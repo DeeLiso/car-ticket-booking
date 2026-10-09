@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { ChartSkeleton, SkeletonPage, StatGridSkeleton } from "@/components/common/Skeleton";
 import { adminApi } from "@/services/endpoints";
 import { StatCard, AreaChart, DonutChart, BarList } from "@/components/dashboard/Stat";
 import { fmtMoney } from "@/utils/format";
@@ -8,7 +9,21 @@ import { fmtMoney } from "@/utils/format";
 export function AdminDashboardPage() {
   const q = useQuery({ queryKey: ["admin-dash"], queryFn: adminApi.dashboard });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading)
+    return (
+      <SkeletonPage label="Loading dashboard" actions={1}>
+        <StatGridSkeleton count={8} />
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-3">
+          <ChartSkeleton />
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+      </SkeletonPage>
+    );
   if (q.error)
     return (
       <div className="px-8 py-10">

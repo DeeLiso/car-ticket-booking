@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader, Alert } from "@/components/common/Alert";
+import { InlineError, Alert } from "@/components/common/Alert";
+import { DetailSkeleton } from "@/components/common/Skeleton";
 import { Button } from "@/components/common/Button";
 import { bookingsApi, paymentsApi } from "@/services/endpoints";
 import { apiErrorMessage } from "@/services/api";
@@ -53,7 +54,7 @@ export function BookingDetailPage() {
     onError: (err) => setPayError(apiErrorMessage(err)),
   });
 
-  if (bookingQ.isLoading) return <PageLoader />;
+  if (bookingQ.isLoading) return <DetailSkeleton label="Loading booking" />;
   if (bookingQ.error)
     return (
       <div className="px-8 py-10">

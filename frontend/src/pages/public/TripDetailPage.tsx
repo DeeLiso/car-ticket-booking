@@ -4,7 +4,8 @@ import { PublicHeader } from "@/components/layout/PublicHeader";
 import { Footer } from "@/components/layout/Footer";
 import { Badge } from "@/components/common/Badge";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { Skeleton } from "@/components/common/Skeleton";
 import { SeatMap } from "@/components/seats/SeatMap";
 import { tripsApi } from "@/services/endpoints";
 import { Button } from "@/components/common/Button";
@@ -15,7 +16,36 @@ export function TripDetailPage() {
   const tripQ = useQuery({ queryKey: ["trip", tripId], queryFn: () => tripsApi.detail(tripId!), enabled: !!tripId });
   const seatsQ = useQuery({ queryKey: ["trip-seats", tripId], queryFn: () => tripsApi.seats(tripId!), enabled: !!tripId });
 
-  if (tripQ.isLoading || seatsQ.isLoading) return <PageLoader label="Loading trip…" />;
+  if (tripQ.isLoading || seatsQ.isLoading)
+    return (
+      <div id="main" tabIndex={-1} className="min-h-screen outline-none">
+        <PublicHeader />
+        <section className="container-app py-8">
+          <div role="status" aria-live="polite">
+            <span className="sr-only">Loading trip…</span>
+            <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+              <div className="card p-5">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="mt-2 h-4 w-64" />
+                <div className="mt-6 grid grid-cols-4 gap-3">
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="card space-y-3 p-5">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
   if (tripQ.error || seatsQ.error)
     return (
       <div className="container-app py-10">

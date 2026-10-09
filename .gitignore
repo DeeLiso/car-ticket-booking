@@ -29,6 +29,9 @@ frontend/.vite/
 *.tsbuildinfo
 npm-debug.log*
 
+# --- Logs ---
+*.log
+
 # --- Editors / OS ---
 .vscode/
 .idea/

@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
 import { operatorApi } from "@/services/endpoints";
 import type { ManifestPassenger } from "@/types";
 import { fmtDateTime } from "@/utils/format";
@@ -11,7 +12,12 @@ export function OperatorManifestPage() {
   const { tripId } = useParams<{ tripId: string }>();
   const q = useQuery({ queryKey: ["op-manifest", tripId], queryFn: () => operatorApi.manifest(tripId!), enabled: !!tripId });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading)
+    return (
+      <SkeletonPage label="Loading manifest">
+        <TableSkeleton columns={4} rows={8} />
+      </SkeletonPage>
+    );
   if (q.error)
     return (
       <div className="px-8 py-10">

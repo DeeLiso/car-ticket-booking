@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/common/Badge";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { DetailSkeleton } from "@/components/common/Skeleton";
 import { Button } from "@/components/common/Button";
 import { ticketsApi } from "@/services/endpoints";
 import { fmtDateTime } from "@/utils/format";
@@ -14,7 +15,7 @@ export function TicketPage() {
     enabled: !!ticketId,
   });
 
-  if (q.isLoading) return <PageLoader />;
+  if (q.isLoading) return <DetailSkeleton label="Loading ticket" />;
   if (q.error)
     return (
       <div className="px-8 py-10">

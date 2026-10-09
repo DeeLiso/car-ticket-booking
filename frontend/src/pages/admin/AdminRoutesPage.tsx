@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader } from "@/components/common/Alert";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
 import { Field, Select } from "@/components/common/Field";
 import { Button } from "@/components/common/Button";
 import { adminApi, catalogApi } from "@/services/endpoints";
@@ -31,7 +32,12 @@ export function AdminRoutesPage() {
     onError: (e) => setError((e as Error).message),
   });
 
-  if (routes.isLoading || cities.isLoading) return <PageLoader />;
+  if (routes.isLoading || cities.isLoading)
+    return (
+      <SkeletonPage label="Loading routes" actions={1}>
+        <TableSkeleton columns={3} rows={6} />
+      </SkeletonPage>
+    );
   if (routes.error || cities.error)
     return (
       <div className="px-8 py-10">

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, PageHeader } from "@/components/common/Card";
-import { InlineError, PageLoader, Alert } from "@/components/common/Alert";
-import { Field, Input, Select } from "@/components/common/Field";
+import { InlineError } from "@/components/common/Alert";
+import { SkeletonPage, TableSkeleton } from "@/components/common/Skeleton";
+import { Field, Input } from "@/components/common/Field";
 import { Button } from "@/components/common/Button";
-import { adminApi, catalogApi } from "@/services/endpoints";
+import { adminApi } from "@/services/endpoints";
 
 export function AdminOperatorsPage() {
   const qc = useQueryClient();
@@ -32,7 +33,12 @@ export function AdminOperatorsPage() {
     onError: (e) => setError((e as Error).message),
   });
 
-  if (ops.isLoading) return <PageLoader />;
+  if (ops.isLoading)
+    return (
+      <SkeletonPage label="Loading operators" actions={1}>
+        <TableSkeleton columns={5} rows={6} />
+      </SkeletonPage>
+    );
   if (ops.error)
     return (
       <div className="px-8 py-10">
