@@ -1,0 +1,40 @@
+# --- Python / backend ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases (dev convenience). Postgres data lives in Docker volumes.
+*.db
+*.db-shm
+*.db-wal
+
+# --- Environment / secrets ---
+# Never commit real secrets. Keep committed .env.example only.
+.env
+.env.*
+!.env.example
+!backend/.env.example
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+docker-data/
