@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { withTranslation, type WithTranslation } from "react-i18next";
 
-interface ErrorBoundaryProps {
+interface ErrorBoundaryProps extends WithTranslation {
   children: ReactNode;
   fallback?: ReactNode;
 }
@@ -10,7 +11,7 @@ interface ErrorBoundaryState {
 }
 
 /** Catches render/lifecycle errors so a crash shows a friendly screen instead of white-screening. */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundaryInner extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { error: null };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -27,6 +28,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render() {
     const { error } = this.state;
+    const { t } = this.props;
     if (!error) return this.props.children;
     if (this.props.fallback) return this.props.fallback;
     return (
@@ -35,9 +37,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-2xl">
             ⚠️
           </div>
-          <h1 className="font-display text-xl font-extrabold text-navy-900">Something went wrong</h1>
+          <h1 className="font-display text-xl font-extrabold text-navy-900">{t("errorBoundary.somethingWentWrong")}</h1>
           <p className="mt-1 text-sm text-navy-500">
-            An unexpected error interrupted this page. Try again, or return home if it keeps happening.
+            {t("errorBoundary.unexpectedError")}
           </p>
           {error.message && (
             <pre className="mt-4 max-h-32 overflow-auto rounded-xl bg-navy-50 p-3 text-left text-xs text-red-700">
@@ -46,10 +48,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           )}
           <div className="mt-5 flex justify-center gap-3">
             <button className="btn-primary" onClick={this.handleReset}>
-              Try again
+              {t("errorBoundary.tryAgain")}
             </button>
             <button className="btn-ghost" onClick={() => window.location.assign("/")}>
-              Go home
+              {t("errorBoundary.goHome")}
             </button>
           </div>
         </div>
@@ -57,3 +59,5 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     );
   }
 }
+
+export const ErrorBoundary = withTranslation()(ErrorBoundaryInner);

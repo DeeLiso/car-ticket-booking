@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Request
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.deps import get_db, require_admin
-from app.core.exceptions import NotFoundError, ValidationError
+from app.core.exceptions import ConflictError, NotFoundError, ValidationError
 from app.models.booking import Booking
 from app.models.catalog import Bus, Route, SystemSetting
 from app.models.enums import BookingStatus, PaymentStatus, RefundStatus, TripStatus, UserRole
@@ -23,6 +23,7 @@ from app.schemas.admin import (
     DashboardResponse,
     OperatorCreate,
     OperatorOut,
+    OperatorUpdate,
     ReportsResponse,
     SystemSettingOut,
     SystemSettingUpdate,
@@ -34,7 +35,7 @@ from app.services import admin_service, auth_service, catalog_service, payment_s
 from app.services.booking_service import to_booking_out
 from app.services.trip_service import trip_summary
 from app.utils.refs import record_audit
-from app.utils.timeutil import now_utc
+from app.utils.timeutil import day_bounds_utc, now_utc
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -162,6 +163,72 @@ def create_operator(
     return item
 
 
+@router.patch("/operators/{operator_id}", response_model=OperatorOut)
+def update_operator(
+    operator_id: str,
+    payload: OperatorUpdate,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: User = Depends(Admin),
+):
+    profile = db.get(OperatorProfile, operator_id)
+    if not profile:
+        raise NotFoundError("Operator not found")
+    updates = payload.model_dump(exclude_unset=True)
+    if "full_name" in updates and updates["full_name"]:
+        updates.pop("full_name")
+        profile.user.full_name = payload.full_name
+    for field in ("company_name", "license_number", "contact_phone"):
+        if field in updates:
+            setattr(profile, field, updates[field])
+    if payload.is_verified is not None:
+        profile.is_verified = payload.is_verified
+    _log(
+        db, request, admin, "operator.update", "OperatorProfile", profile.id,
+        {"company": profile.company_name, "changes": list(updates.keys())},
+    )
+    db.commit()
+    db.refresh(profile)
+    item = OperatorOut.model_validate(profile)
+    item.email = profile.user.email
+    item.full_name = profile.user.full_name
+    item.buses_count = int(
+        db.scalar(
+            select(func.count(Bus.id)).where(Bus.operator_id == profile.user_id, Bus.deleted_at.is_(None))
+        )
+        or 0
+    )
+    return item
+
+
+@router.delete("/operators/{operator_id}", status_code=204)
+def delete_operator(
+    operator_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: User = Depends(Admin),
+):
+    profile = db.get(OperatorProfile, operator_id)
+    if not profile:
+        raise NotFoundError("Operator not found")
+    bus_count = int(
+        db.scalar(
+            select(func.count(Bus.id)).where(Bus.operator_id == profile.user_id, Bus.deleted_at.is_(None))
+        )
+        or 0
+    )
+    if bus_count > 0:
+        raise ConflictError(
+            f"Cannot delete {profile.company_name}: the operator still owns {bus_count} bus(es). "
+            "Remove their buses first."
+        )
+    audit = {"company": profile.company_name, "email": profile.user.email}
+    db.delete(profile)
+    db.delete(profile.user)
+    _log(db, request, admin, "operator.delete", "User", profile.user_id, audit)
+    db.commit()
+
+
 # ---------------------------------------------------------------- buses
 @router.get("/buses")
 def list_buses(
@@ -256,6 +323,68 @@ def update_route(
     return route
 
 
+# ---------------------------------------------------------------- fleet map
+@router.get("/fleet")
+def fleet_map(db: Session = Depends(get_db), user: User = Depends(Admin)):
+    """Every active bus with the route (origin -> destination) of its latest
+    trip, so the admin map can draw the whole business fleet at once."""
+    buses = db.scalars(
+        select(Bus).where(Bus.deleted_at.is_(None)).order_by(Bus.created_at.desc())
+    ).all()
+    bus_ids = [b.id for b in buses]
+
+    latest: dict[str, Trip] = {}
+    if bus_ids:
+        newest = (
+            select(Trip.bus_id.label("bus_id"), func.max(Trip.departure_at).label("latest"))
+            .where(Trip.bus_id.in_(bus_ids))
+            .group_by(Trip.bus_id)
+            .subquery()
+        )
+        trips = db.scalars(
+            select(Trip)
+            .options(
+                selectinload(Trip.route).selectinload(Route.origin_city),
+                selectinload(Trip.route).selectinload(Route.destination_city),
+            )
+            .join(newest, (Trip.bus_id == newest.c.bus_id) & (Trip.departure_at == newest.c.latest))
+        ).all()
+        latest = {t.bus_id: t for t in trips}
+
+    companies = (
+        dict(
+            db.execute(
+                select(OperatorProfile.user_id, OperatorProfile.company_name).where(
+                    OperatorProfile.user_id.in_([b.operator_id for b in buses])
+                )
+            ).all()
+        )
+        if buses
+        else {}
+    )
+
+    out = []
+    for bus in buses:
+        trip = latest.get(bus.id)
+        route = trip.route if trip else None
+        out.append(
+            {
+                "bus_id": bus.id,
+                "bus_name": bus.name,
+                "registration_number": bus.registration_number,
+                "bus_type": bus.bus_type,
+                "layout": bus.layout,
+                "seat_capacity": bus.seat_capacity,
+                "is_active": bus.is_active,
+                "operator": companies.get(bus.operator_id),
+                "origin": route.origin_city.name if route and route.origin_city else None,
+                "destination": route.destination_city.name if route and route.destination_city else None,
+                "latest_trip_at": trip.departure_at if trip else None,
+            }
+        )
+    return out
+
+
 # ---------------------------------------------------------------- trips
 @router.get("/trips")
 def list_trips(
@@ -263,6 +392,7 @@ def list_trips(
     user: User = Depends(Admin),
     route_id: Optional[str] = None,
     status: Optional[TripStatus] = None,
+    departure_date: Optional[datetime] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
 ):
@@ -275,6 +405,9 @@ def list_trips(
         stmt = stmt.where(Trip.route_id == route_id)
     if status:
         stmt = stmt.where(Trip.status == status.value)
+    if departure_date:
+        start, end = day_bounds_utc(departure_date)
+        stmt = stmt.where(and_(Trip.departure_at >= start, Trip.departure_at < end))
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     trips = db.scalars(stmt.offset((page - 1) * page_size).limit(page_size)).all()
     return {
@@ -314,6 +447,44 @@ def update_trip(
 
 
 # ---------------------------------------------------------------- bookings/payments/refunds
+@router.get("/bookings/feed")
+def bookings_feed(
+    db: Session = Depends(get_db),
+    user: User = Depends(Admin),
+    since: Optional[datetime] = None,
+    limit: int = Query(30, ge=1, le=100),
+):
+    """Live feed of incoming customer bookings for the admin alarm page.
+
+    Returns the most recent bookings plus the count created strictly after
+    ``since`` so the client can raise an alert for genuinely new bookings.
+    """
+    stmt = (
+        select(Booking)
+        .options(
+            selectinload(Booking.seats),
+            selectinload(Booking.passengers),
+            selectinload(Booking.trip),
+            selectinload(Booking.ticket),
+        )
+        .order_by(Booking.created_at.desc())
+        .limit(limit)
+    )
+    bookings = db.scalars(stmt).all()
+    latest_created_at = db.scalar(select(func.max(Booking.created_at)))
+    new_count = 0
+    if since is not None:
+        new_count = (
+            db.scalar(select(func.count()).select_from(Booking).where(Booking.created_at > since))
+            or 0
+        )
+    return {
+        "items": [to_booking_out(db, b).model_dump(mode="json") for b in bookings],
+        "new_count": new_count,
+        "latest_created_at": latest_created_at.isoformat() if latest_created_at else None,
+    }
+
+
 @router.get("/bookings")
 def list_bookings(
     db: Session = Depends(get_db),

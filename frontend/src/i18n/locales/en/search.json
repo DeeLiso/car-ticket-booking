@@ -1,0 +1,49 @@
+{
+  "search": {
+    "heroTitle": "Find your trip",
+    "heroSubtitle": "Compare live seats and honest fares from verified operators across Myanmar.",
+    "availableTrips": "Available trips",
+    "found_one": "{{count}} found",
+    "found_other": "{{count}} found",
+    "searching": "Searching trips…",
+    "operator": "Operator",
+    "verified": "Verified",
+    "seatsLeft_one": "{{count}} seat left",
+    "seatsLeft_other": "{{count}} seats left",
+    "chooseSeats": "Choose seats",
+    "window": {
+      "any": "Any time",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "sort": {
+      "departure": "Earliest",
+      "price": "Cheapest",
+      "duration": "Shortest"
+    },
+    "emptyTitle": "No trips match",
+    "emptyDesc": "Try a different date, route, or passenger count. New trips open every day."
+  },
+  "forms": {
+    "from": "From",
+    "to": "To",
+    "fromCity": "From city",
+    "toCity": "To city",
+    "departureDate": "Departure date",
+    "passengers": "Passengers",
+    "passengerCount_one": "{{count}} passenger",
+    "passengerCount_other": "{{count}} passengers",
+    "chooseCity": "Choose city",
+    "loadingCities": "Loading cities…",
+    "searchCities": "Search cities",
+    "searchCitiesFor": "Search {{label}}",
+    "noCities": "No cities found",
+    "selectDate": "Select date",
+    "searchTrips": "Search trips",
+    "originRequired": "Choose a departure city.",
+    "destinationRequired": "Choose a destination city.",
+    "citiesError": "Couldn't load the city list. Make sure the API server is running, then retry."
+  }
+}

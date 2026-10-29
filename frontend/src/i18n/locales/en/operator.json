@@ -1,0 +1,103 @@
+{
+  "operator": {
+    "status": {
+      "SCHEDULED": "Scheduled",
+      "BOARDING": "Boarding",
+      "DEPARTED": "Departed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "cities": {
+      "Yangon": "Yangon",
+      "Mandalay": "Mandalay",
+      "Naypyidaw": "Naypyidaw",
+      "Bagan": "Bagan",
+      "Taunggyi": "Taunggyi",
+      "Mawlamyine": "Mawlamyine",
+      "Pyay": "Pyay",
+      "Pathein": "Pathein",
+      "Hpa-An": "Hpa-An",
+      "Kyaikhto": "Kyaikhto",
+      "Pyin Oo Lwin": "Pyin Oo Lwin",
+      "Dawei": "Dawei",
+      "Myeik": "Myeik",
+      "Lashio": "Lashio"
+    },
+    "dashboard": {
+      "loading": "Loading dashboard",
+      "title": "Operator dashboard",
+      "subtitle": "Your fleet at a glance.",
+      "buses": "Buses",
+      "trips": "Trips",
+      "confirmedBookings": "Confirmed bookings",
+      "seatsSold": "Seats sold",
+      "upcomingTrips": "Upcoming trips",
+      "empty": "No trips assigned to your fleet yet.",
+      "sold": "{{sold}}/{{total}} sold"
+    },
+    "buses": {
+      "title": "My buses",
+      "subtitle": "Every vehicle in your fleet, with live Origin → Destination routing on the map."
+    },
+    "trips": {
+      "loading": "Loading trips",
+      "title": "Trips",
+      "subtitle": "Open a trip to see its boarding manifest.",
+      "emptyTitle": "No trips yet",
+      "emptyDesc": "Trips appear here once routed to your buses.",
+      "price": "Price: {{value}}",
+      "capacity": "Capacity: {{value}}",
+      "seatsSold": "Seats sold",
+      "manifest": "Manifest"
+    },
+    "manifest": {
+      "loading": "Loading manifest",
+      "title": "Trip manifest",
+      "subtitle": "{{origin}} → {{destination}} · Departs {{departs}}",
+      "confirmedCount": "Confirmed: {{count}}",
+      "seat": "Seat",
+      "passenger": "Passenger",
+      "phone": "Phone",
+      "bookingRef": "Booking ref",
+      "empty": "No confirmed passengers yet.",
+      "footer": "Bus: {{registration}} · Trip ID: {{tripId}}"
+    },
+    "scan": {
+      "title": "Validate QR ticket",
+      "subtitle": "Scan or paste a secure ticket token to check validity.",
+      "tokenLabel": "QR token (opaque)",
+      "tripIdLabel": "Trip ID (optional)",
+      "validate": "Validate",
+      "secureBadge": "Secure · single use",
+      "scanConsole": "Scan console",
+      "scanConsoleHint": "Paste the token from the passenger’s QR code, then validate.",
+      "paste": "Paste from clipboard",
+      "clearToken": "Clear token",
+      "validTitle": "Ticket valid — allow boarding",
+      "invalidTitle": "Ticket not valid",
+      "scanNext": "Scan next ticket",
+      "sessionLog": "Session log",
+      "sessionEmpty": "Validated tickets will appear here.",
+      "clearLog": "Clear",
+      "ticket": "Ticket",
+      "bookingRef": "Booking ref",
+      "passengers": "Passengers",
+      "seats": "Seats",
+      "tripId": "Trip ID",
+      "notesTitle": "Notes",
+      "note1": "Provide trip_id to enforce “wrong trip” detection.",
+      "note2": "Tokens are opaque and single-use. Each scan consumes it.",
+      "note3": "Already used, cancelled, or not confirmed tickets are rejected.",
+      "outcome": {
+        "VALID": "Valid",
+        "ALREADY_USED": "Already used",
+        "NOT_FOUND": "Not found",
+        "NOT_CONFIRMED": "Not confirmed",
+        "CANCELLED": "Cancelled",
+        "WRONG_TRIP": "Wrong trip",
+        "PAYMENT_INVALID": "Payment invalid",
+        "ERROR": "Request failed"
+      }
+    }
+  }
+}

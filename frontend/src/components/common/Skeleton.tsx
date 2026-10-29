@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { PageHero } from "@/components/layout/PageHero";
 
 /** Base shimmer block — sized with width/height utilities by callers. */
 export function Skeleton({ className = "" }: { className?: string }) {
@@ -25,19 +26,21 @@ export function SkeletonPage({
     <div role="status" aria-live="polite" className="px-4 py-8 sm:px-8 lg:px-10">
       <span className="sr-only">{label}</span>
       {header && (
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div className="space-y-2">
-            <Skeleton className="h-7 w-52" />
-            <Skeleton className="h-4 w-72 max-w-full" />
-          </div>
-          {actions > 0 && (
-            <div className="flex gap-2">
-              {Array.from({ length: actions }).map((_, i) => (
-                <Skeleton key={i} className="h-10 w-32" />
-              ))}
+        <PageHero className="-mx-4 -mt-8 mb-6 sm:-mx-8 lg:-mx-10">
+          <div className="flex flex-wrap items-end justify-between gap-4 px-4 py-7 sm:px-8 lg:px-10">
+            <div className="space-y-2">
+              <Skeleton className="h-7 w-52" />
+              <Skeleton className="h-4 w-72 max-w-full" />
             </div>
-          )}
-        </div>
+            {actions > 0 && (
+              <div className="flex gap-2">
+                {Array.from({ length: actions }).map((_, i) => (
+                  <Skeleton key={i} className="h-10 w-32" />
+                ))}
+              </div>
+            )}
+          </div>
+        </PageHero>
       )}
       {children}
     </div>

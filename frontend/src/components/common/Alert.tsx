@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export function Alert({
   tone = "error",
@@ -9,6 +10,7 @@ export function Alert({
   children: ReactNode;
   onClose?: () => void;
 }) {
+  const { t } = useTranslation();
   const tones = {
     error: "border-red-200 bg-red-50 text-red-700",
     success: "border-emerald-200 bg-emerald-50 text-emerald-700",
@@ -18,7 +20,7 @@ export function Alert({
     <div className={`card flex items-start justify-between gap-3 border px-4 py-3 ${tones[tone]}`}>
       <div className="whitespace-pre-line text-sm">{children}</div>
       {onClose && (
-        <button onClick={onClose} className="text-current/60 hover:text-current" aria-label="Dismiss">
+        <button onClick={onClose} className="text-current/60 hover:text-current" aria-label={t("common.close")}>
           ✕
         </button>
       )}
@@ -26,25 +28,28 @@ export function Alert({
   );
 }
 
-export function PageLoader({ label = "Loading…" }: { label?: string }) {
+export function PageLoader({ label }: { label?: string }) {
+  const { t } = useTranslation();
+  const displayLabel = label ?? t("common.loading");
   return (
     <div role="status" aria-live="polite" className="flex flex-col items-center justify-center gap-3 py-24 text-navy-400">
       <svg className="h-8 w-8 animate-spin text-brand-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
         <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-sm font-medium">{displayLabel}</span>
     </div>
   );
 }
 
 export function InlineError({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useTranslation();
   return (
     <Alert tone="error">
       <span>{message}</span>
       {onRetry && (
         <button onClick={onRetry} className="ml-2 font-semibold underline">
-          Retry
+          {t("common.retry") || "Retry"}
         </button>
       )}
     </Alert>

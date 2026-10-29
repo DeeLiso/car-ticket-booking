@@ -18,6 +18,8 @@ class InitiationResult:
     redirect_url: Optional[str] = None
     instructions: Optional[str] = None
     mock_token: Optional[str] = None
+    # EMVCo / MMQR payload string for QR-based wallets (rendered client-side).
+    qr_payload: Optional[str] = None
 
 
 @dataclass

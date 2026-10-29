@@ -85,6 +85,21 @@ class PasswordChangeRequest(BaseModel):
         return v
 
 
+class ProfileUpdate(BaseModel):
+    full_name: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    phone: Optional[str] = Field(default=None, max_length=32)
+
+    @field_validator("full_name")
+    @classmethod
+    def clean_name(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        v = " ".join(v.split())
+        if len(v) < 2:
+            raise ValueError("Full name is too short")
+        return v
+
+
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 

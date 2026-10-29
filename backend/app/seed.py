@@ -13,16 +13,17 @@ import argparse
 import sys
 from datetime import timedelta
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, or_, select
 
 from app.core.config import settings
 from app.core.security import hash_password
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
 from app.models.booking import Booking  # noqa: F401  register tables
-from app.models.catalog import Bus, City, Route
+from app.models.catalog import Bus, BusSeat, City, Route
 from app.models.enums import BusType, UserRole, UserStatus
-from app.models.trip import Trip
+from app.models.payment import Payment, Refund
+from app.models.trip import Trip, TripSeatInventory
 from app.models.user import OperatorProfile, User
 from app.schemas.catalog import BusCreate
 from app.services import catalog_service, seat_service
@@ -38,6 +39,12 @@ CITIES = [
     ("Mawlamyine", "mawlamyine", "Mon State", False),
     ("Pyay", "pyay", "Bago Region", False),
     ("Pathein", "pathein", "Ayeyarwady Region", False),
+    ("Hpa-An", "hpa-an", "Kayin State", False),
+    ("Kyaikhto", "kyaikhto", "Mon State", False),
+    ("Pyin Oo Lwin", "pyin-oo-lwin", "Mandalay Region", False),
+    ("Dawei", "dawei", "Tanintharyi Region", False),
+    ("Myeik", "myeik", "Tanintharyi Region", False),
+    ("Lashio", "lashio", "Shan State", False),
 ]
 
 # (origin, destination, distance_km, duration_minutes)
@@ -55,8 +62,27 @@ ROUTE_SPECS = [
     ("Mandalay", "Taunggyi", 220, 210),
     ("Taunggyi", "Mandalay", 220, 210),
     ("Yangon", "Mawlamyine", 300, 270),
+    ("Mawlamyine", "Yangon", 300, 270),
     ("Yangon", "Pathein", 190, 240),
+    ("Pathein", "Yangon", 190, 240),
     ("Yangon", "Pyay", 260, 240),
+    ("Pyay", "Yangon", 260, 240),
+    ("Yangon", "Hpa-An", 250, 360),
+    ("Hpa-An", "Yangon", 250, 360),
+    ("Yangon", "Kyaikhto", 190, 240),
+    ("Kyaikhto", "Yangon", 190, 240),
+    ("Yangon", "Pyin Oo Lwin", 630, 600),
+    ("Pyin Oo Lwin", "Yangon", 630, 600),
+    ("Mandalay", "Pyin Oo Lwin", 75, 120),
+    ("Pyin Oo Lwin", "Mandalay", 75, 120),
+    ("Mandalay", "Bagan", 160, 240),
+    ("Bagan", "Mandalay", 160, 240),
+    ("Yangon", "Dawei", 700, 720),
+    ("Dawei", "Yangon", 700, 720),
+    ("Yangon", "Myeik", 850, 840),
+    ("Myeik", "Yangon", 850, 840),
+    ("Mandalay", "Lashio", 300, 300),
+    ("Lashio", "Mandalay", 300, 300),
 ]
 
 # (registration, name, bus_type, layout, capacity, amenities, vip_rows)
@@ -83,6 +109,69 @@ DEPARTURE_HOURS = [6, 8, 10, 13, 17, 20, 23]
 PRICE_BY_BUS = {0: 42000, 1: 52000, 2: 36000, 3: 48000, 4: 46000, 5: 54000, 6: 56000, 7: 39000}
 
 
+def _prune_test_data(db: SessionLocal) -> None:
+    """Remove leftover test/dummy rows (e.g. "ScrA -> ScrB" routes) so they
+    never surface in the admin catalog or public search. Safe when empty."""
+    scr_city_ids = select(City.id).where(City.name.like("Scr%"))
+    scr_route_ids = select(Route.id).where(
+        or_(
+            Route.origin_city_id.in_(scr_city_ids),
+            Route.destination_city_id.in_(scr_city_ids),
+        )
+    )
+    scr_trip_ids = select(Trip.id).where(Trip.route_id.in_(scr_route_ids))
+
+    # Referencing bookings must go first: Booking cascades to seats/passengers/
+    # ticket via ORM, but payments/refunds have no cascade.
+    scr_bookings = list(db.scalars(select(Booking).where(Booking.trip_id.in_(scr_trip_ids))))
+    for booking in scr_bookings:
+        for payment in list(booking.payments):
+            db.execute(delete(Refund).where(Refund.payment_id == payment.id))
+            db.execute(delete(Payment).where(Payment.id == payment.id))
+        db.delete(booking)
+    db.commit()
+
+    db.execute(delete(TripSeatInventory).where(TripSeatInventory.trip_id.in_(scr_trip_ids)))
+    db.execute(delete(Trip).where(Trip.id.in_(scr_trip_ids)))
+    db.execute(delete(Route).where(Route.id.in_(scr_route_ids)))
+    db.execute(delete(City).where(City.id.in_(scr_city_ids)))
+    db.commit()
+
+    _prune_scratch_fleet(db)
+
+
+def _prune_scratch_fleet(db: SessionLocal) -> None:
+    """Remove "Scratch Bus" test vehicles (and their throwaway operator
+    accounts) so the fleet pages only ever show real operators."""
+    scr_bus_ids = select(Bus.id).where(
+        or_(Bus.name.like("Scratch%"), Bus.registration_number.like("SCRT-%"))
+    )
+    scr_trip_ids = select(Trip.id).where(Trip.bus_id.in_(scr_bus_ids))
+
+    scr_bookings = list(db.scalars(select(Booking).where(Booking.trip_id.in_(scr_trip_ids))))
+    for booking in scr_bookings:
+        for payment in list(booking.payments):
+            db.execute(delete(Refund).where(Refund.payment_id == payment.id))
+            db.execute(delete(Payment).where(Payment.id == payment.id))
+        db.delete(booking)
+    db.commit()
+
+    db.execute(delete(TripSeatInventory).where(TripSeatInventory.trip_id.in_(scr_trip_ids)))
+    db.execute(delete(Trip).where(Trip.id.in_(scr_trip_ids)))
+    db.execute(delete(BusSeat).where(BusSeat.bus_id.in_(scr_bus_ids)))
+    db.execute(delete(Bus).where(Bus.id.in_(scr_bus_ids)))
+    db.commit()
+
+    # Throwaway operator logins have no fleet and no personal bookings left.
+    for user in list(db.scalars(select(User).where(User.email.like("op-%@test.com")))):
+        has_bus = db.scalar(select(func.count(Bus.id)).where(Bus.operator_id == user.id)) or 0
+        has_booking = db.scalar(select(func.count(Booking.id)).where(Booking.user_id == user.id)) or 0
+        if has_bus == 0 and has_booking == 0:
+            db.execute(delete(OperatorProfile).where(OperatorProfile.user_id == user.id))
+            db.execute(delete(User).where(User.id == user.id))
+    db.commit()
+
+
 def seed(*, reset: bool = False) -> None:
     if settings.is_production:
         raise SystemExit("Refusing to seed a production database.")
@@ -93,6 +182,8 @@ def seed(*, reset: bool = False) -> None:
             for table in reversed(Base.metadata.sorted_tables):
                 db.execute(table.delete())
             db.commit()
+
+        _prune_test_data(db)
 
         admin = db.scalar(select(User).where(User.email == "admin@example.com"))
         if admin is None:
@@ -187,7 +278,9 @@ def seed(*, reset: bool = False) -> None:
                 continue
             # pick routes for this bus round-robin
             route_index = bus_idx % len(ROUTE_SPECS)
-            for day_offset in range(0, 14):
+            # Seed across a full route cycle so every route is covered by trips
+            # (a 14-day horizon only reaches a fraction of the catalog).
+            for day_offset in range(len(ROUTE_SPECS)):
                 for hour in DEPARTURE_HOURS:
                     if (bus_idx + hour + day_offset) % 3 != 0:
                         continue
@@ -206,6 +299,15 @@ def seed(*, reset: bool = False) -> None:
                     departure = local_dep.astimezone(now.tzinfo)
                     arrival = departure + timedelta(minutes=dur)
                     if departure <= now:
+                        continue
+                    # Idempotent: re-running the seeder must not duplicate trips.
+                    if db.scalar(
+                        select(Trip.id).where(
+                            Trip.route_id == route.id,
+                            Trip.bus_id == bus.id,
+                            Trip.departure_at == departure,
+                        )
+                    ) is not None:
                         continue
                     trip = Trip(
                         route_id=route.id,

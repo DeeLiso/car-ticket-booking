@@ -50,6 +50,23 @@ class Settings(BaseSettings):
     bank_transfer_account: str = ""
     webhook_secret: str = "change-me-webhook-secret"
 
+    # MyanMyanPay (MMPay / MMQR aggregator). Sandbox mode is auto-detected by
+    # the SDK when the key contains "_test_" (see MMPayClient).
+    mmpay_app_id: str = ""
+    mmpay_publishable_key: str = ""
+    mmpay_secret_key: str = ""
+    mmpay_base_url: str = "https://api.myanmyanpay.com"
+    mmpay_currency: str = "MMK"
+    # Absolute URL MyanMyanPay calls back on payment events. Must be publicly
+    # reachable; leave blank to derive from the request origin in dev.
+    mmpay_callback_url: str = ""
+
+    # Cookie policy & consent. Bump cookie_policy_version whenever the policy
+    # changes so returning visitors see the update notification again.
+    cookie_policy_version: str = "2.0"
+    cookie_policy_effective_date: str = "2026-01-01"
+    cookie_policy_updated_date: str = "2026-01-01"
+
     ticket_single_use: bool = True
     rate_limit_per_minute: int = 120
     rate_limit_auth_per_minute: int = 10

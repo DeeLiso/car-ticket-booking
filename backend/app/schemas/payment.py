@@ -39,6 +39,8 @@ class PaymentInitiateResponse(BaseModel):
     payment: PaymentOut
     redirect_url: Optional[str] = None
     instructions: Optional[str] = None
+    # EMVCo / MMQR payload to render client-side for QR wallet payments.
+    qr_payload: Optional[str] = None
     # Only present for the development-only mock adapter.
     mock_confirm_token: Optional[str] = None
 

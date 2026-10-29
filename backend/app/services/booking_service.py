@@ -19,6 +19,7 @@ from app.models.booking import Booking, BookingPassenger, BookingSeat
 from app.models.catalog import Route
 from app.models.enums import (
     BookingStatus,
+    NotificationType,
     PaymentStatus,
     RefundStatus,
     TicketStatus,
@@ -30,6 +31,7 @@ from app.models.ticket import Ticket
 from app.models.trip import Trip
 from app.schemas.booking import BookingOut, BookingTripInfo
 from app.services import seat_service
+from app.services.notification_service import notify
 from app.utils.refs import generate_unique_reference
 from app.utils.timeutil import ensure_aware, now_utc
 
@@ -156,6 +158,16 @@ def create_booking(
             )
         )
 
+    notify(
+        db,
+        user_id=user_id,
+        type=NotificationType.BOOKING,
+        title="Booking received",
+        body=f"We've reserved {booking.seat_count} seat(s) for booking {booking.reference}. "
+        "Complete payment to confirm your seats.",
+        link=f"/account/bookings/{booking.id}",
+    )
+
     try:
         db.commit()
     except IntegrityError:
@@ -178,6 +190,14 @@ def confirm_after_payment(db: Session, booking: Booking, *, commit: bool = True)
     booking.status = BookingStatus.CONFIRMED.value
     booking.confirmed_at = now_utc()
     db.flush()
+    notify(
+        db,
+        user_id=booking.user_id,
+        type=NotificationType.PAYMENT,
+        title="Payment received",
+        body=f"Your booking {booking.reference} is confirmed. Your e-ticket is ready.",
+        link=f"/account/bookings/{booking.id}",
+    )
     if commit:
         db.commit()
         db.refresh(booking)
@@ -269,6 +289,18 @@ def cancel_booking(
 
     booking.cancelled_at = now_utc()
     booking.cancellation_reason = reason
+    if booking.status == BookingStatus.REFUND_PENDING.value:
+        cancel_body = f"Booking {booking.reference} was cancelled. A refund request has been submitted."
+    else:
+        cancel_body = f"Booking {booking.reference} was cancelled."
+    notify(
+        db,
+        user_id=booking.user_id,
+        type=NotificationType.BOOKING,
+        title="Booking cancelled",
+        body=cancel_body,
+        link=f"/account/bookings/{booking.id}",
+    )
     db.commit()
     db.refresh(booking)
     return booking

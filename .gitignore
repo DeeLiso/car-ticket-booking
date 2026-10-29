@@ -25,6 +25,7 @@ htmlcov/
 # --- Node / frontend ---
 node_modules/
 frontend/dist/
+frontend/dev-dist/
 frontend/.vite/
 *.tsbuildinfo
 npm-debug.log*

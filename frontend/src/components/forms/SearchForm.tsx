@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { catalogApi, type TripSearchQuery } from "@/services/endpoints";
 import { todayInputValue } from "@/utils/format";
 import { Button } from "@/components/common/Button";
-import { Field, Select, Input } from "@/components/common/Field";
+import { Field } from "@/components/common/Field";
+import { InlineError } from "@/components/common/Alert";
+import { CitySelect } from "@/components/forms/CitySelect";
+import { PassengerSelect } from "@/components/forms/PassengerSelect";
+import { DateCalendarPicker } from "@/components/calendar/DateCalendarPicker";
 
 export interface SearchParams {
   origin_city_id: string;
@@ -31,17 +36,37 @@ export function SearchForm({
   variant?: "panel" | "compact";
   onSubmit?: (p: SearchParams) => void;
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: cities = [] } = useQuery({ queryKey: ["cities"], queryFn: catalogApi.cities });
+  const uid = useId();
+  const originId = `${uid}-origin`;
+  const destinationId = `${uid}-destination`;
+  const passengersId = `${uid}-passengers`;
+  const {
+    data: cities = [],
+    isLoading: citiesLoading,
+    isError: citiesError,
+    refetch: refetchCities,
+  } = useQuery({ queryKey: ["cities"], queryFn: catalogApi.cities });
   const [form, setForm] = useState<SearchParams>({
     origin_city_id: initial.origin_city_id ?? "",
     destination_city_id: initial.destination_city_id ?? "",
     departure_date: initial.departure_date ?? todayInputValue(),
     passengers: initial.passengers ?? 1,
   });
+  const [error, setError] = useState("");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.origin_city_id) {
+      setError(t("forms.originRequired"));
+      return;
+    }
+    if (!form.destination_city_id) {
+      setError(t("forms.destinationRequired"));
+      return;
+    }
+    setError("");
     if (onSubmit) {
       onSubmit(form);
       return;
@@ -56,71 +81,89 @@ export function SearchForm({
   }
 
   const panel = variant === "panel";
+  const span = panel ? "sm:col-span-2 lg:col-span-4" : "sm:col-span-4";
+  const citiesDisabled = citiesLoading || citiesError;
   return (
     <form
       onSubmit={submit}
-      className={`${panel ? "card grid gap-4 p-6 shadow-pop sm:grid-cols-2 lg:grid-cols-[1.2fr_1.2fr_1fr_auto]" : "grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]"}`}
+      className={`${panel ? "card grid gap-3 p-4 shadow-pop sm:gap-4 sm:p-6 sm:grid-cols-2 lg:grid-cols-[1.2fr_1.2fr_1.2fr_auto]" : "grid gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]"}`}
     >
-      <Field label="From">
-        <Select
+      {error && (
+        <div className={span}>
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+        </div>
+      )}
+      {citiesError && (
+        <div className={span}>
+          <InlineError
+            message={t("forms.citiesError")}
+            onRetry={() => refetchCities()}
+          />
+        </div>
+      )}
+      <div>
+        <label htmlFor={originId} className="label">
+          {t("forms.from")}
+        </label>
+        <CitySelect
+          id={originId}
+          ariaLabel={t("forms.fromCity")}
+          cities={cities}
           value={form.origin_city_id}
-          onChange={(e) => setForm({ ...form, origin_city_id: e.target.value })}
-          required
-        >
-          <option value="" disabled>
-            Choose city
-          </option>
-          {cities.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </Select>
-      </Field>
-      <Field label="To">
-        <Select
+          disabled={citiesDisabled}
+          placeholder={citiesLoading ? t("forms.loadingCities") : t("forms.chooseCity")}
+          onChange={(id) => {
+            setError("");
+            setForm((f) => ({
+              ...f,
+              origin_city_id: id,
+              destination_city_id: f.destination_city_id === id ? "" : f.destination_city_id,
+            }));
+          }}
+        />
+      </div>
+      <div>
+        <label htmlFor={destinationId} className="label">
+          {t("forms.to")}
+        </label>
+        <CitySelect
+          id={destinationId}
+          ariaLabel={t("forms.toCity")}
+          cities={cities.filter((c) => c.id !== form.origin_city_id)}
           value={form.destination_city_id}
-          onChange={(e) => setForm({ ...form, destination_city_id: e.target.value })}
-          required
-        >
-          <option value="" disabled>
-            Choose city
-          </option>
-          {cities
-            .filter((c) => c.id !== form.origin_city_id)
-            .map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-        </Select>
-      </Field>
+          disabled={citiesDisabled}
+          placeholder={citiesLoading ? t("forms.loadingCities") : t("forms.chooseCity")}
+          onChange={(id) => {
+            setError("");
+            setForm((f) => ({ ...f, destination_city_id: id }));
+          }}
+        />
+      </div>
       <div className={panel ? "sm:col-span-2 lg:col-span-1" : ""}>
-        <Field label="Departure date">
-          <Input
-            type="date"
-            min={todayInputValue()}
+        <Field label={t("forms.departureDate")}>
+          <DateCalendarPicker
             value={form.departure_date}
-            onChange={(e) => setForm({ ...form, departure_date: e.target.value })}
-            required
+            min={todayInputValue()}
+            onChange={(value) => setForm({ ...form, departure_date: value })}
           />
         </Field>
       </div>
-      <Field label="Passengers">
-        <Select
+      <div>
+        <label htmlFor={passengersId} className="label">
+          {t("forms.passengers")}
+        </label>
+        <PassengerSelect
+          id={passengersId}
+          ariaLabel={t("forms.passengers")}
           value={form.passengers}
-          onChange={(e) => setForm({ ...form, passengers: Number(e.target.value) })}
-        >
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-            <option key={n} value={n}>
-              {n} {n === 1 ? "passenger" : "passengers"}
-            </option>
-          ))}
-        </Select>
-      </Field>
+          onChange={(value) => setForm((f) => ({ ...f, passengers: value }))}
+        />
+      </div>
       <div className={panel ? "flex items-end lg:col-span-4" : "flex items-end"}>
         <Button type="submit" size="lg" className="w-full">
-          Search trips
+          {t("forms.searchTrips")}
         </Button>
       </div>
     </form>

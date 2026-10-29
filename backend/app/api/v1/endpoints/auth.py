@@ -14,6 +14,7 @@ from app.schemas.auth import (
     ForgotPasswordRequest,
     LoginRequest,
     PasswordChangeRequest,
+    ProfileUpdate,
     RefreshRequest,
     RegisterRequest,
     ResetPasswordRequest,
@@ -60,6 +61,22 @@ def logout(payload: RefreshRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
+    return user
+
+
+@router.patch("/me", response_model=UserOut)
+def update_me(
+    payload: ProfileUpdate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    data = payload.model_dump(exclude_unset=True)
+    if data.get("full_name") is not None:
+        user.full_name = data["full_name"]
+    if "phone" in data:
+        user.phone = data["phone"] or None
+    db.commit()
+    db.refresh(user)
     return user
 
 

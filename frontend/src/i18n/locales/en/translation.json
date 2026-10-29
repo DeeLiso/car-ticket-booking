@@ -1,0 +1,31 @@
+{
+  "common": {
+    "appName": "T-M-T",
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "submit": "Submit",
+    "search": "Search",
+    "settings": "Settings",
+    "success": "Success",
+    "error": "An error occurred",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "of": "of",
+    "optional": "optional",
+    "required": "required",
+    "perPage": "per page"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Menu links, support and account preferences.",
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Theme and Myanmar font for this device.",
+      "darkMode": "Dark mode",
+      "language": "Language"
+    },
+    "menu": {
+      "title": "Menu",
+      "subtitle": "Everything from the top bar menu."
+    },
+    "links": {
+      "title": "Links",
+      "company": "Company",
+      "about": "About us",
+      "cookiePolicy": "Cookie Policy",
+      "support": "Support",
+      "faq": "FAQ",
+      "partners": "For partners",
+      "operatorLogin": "Operator login",
+      "admin": "Admin",
+      "auditLogs": "Audit logs",
+      "legal": "Legal",
+      "rights": "© {{year}} {{app}}. All rights reserved."
+    }
+  }
+}

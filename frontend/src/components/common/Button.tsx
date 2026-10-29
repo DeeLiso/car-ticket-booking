@@ -16,7 +16,7 @@ export function Spinner({ className = "" }: { className?: string }) {
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "accent" | "ghost" | "danger";
+  variant?: "primary" | "brand" | "accent" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   children: ReactNode;

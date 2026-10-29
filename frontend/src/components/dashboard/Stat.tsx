@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface StatDef {
   label: string;
@@ -55,6 +56,7 @@ export function AreaChart({
   formatValue?: (v: number) => string;
 }) {
   const gradientId = useId();
+  const { t } = useTranslation();
   const [hover, setHover] = useState<number | null>(null);
   const width = 640;
   const padX = 24;
@@ -76,7 +78,9 @@ export function AreaChart({
     return { points: values, path: line, area: areaPath, coords: c };
   }, [data, height]);
 
-  if (!data.length) return <p className="py-10 text-center text-sm text-navy-400">No data yet.</p>;
+  if (!data.length) {
+    return <p className="py-10 text-center text-sm text-navy-400">{t("stat.noDataYet")}</p>;
+  }
 
   return (
     <div className="relative">
@@ -152,13 +156,16 @@ export function DonutChart({
   formatValue?: (v: number) => string;
 }) {
   const [hover, setHover] = useState<number | null>(null);
+  const { t } = useTranslation();
   const total = Math.max(1, data.reduce((s, d) => s + d.value, 0));
   const radius = size / 2;
   const stroke = 22;
   const r = radius - stroke / 2;
   const circumference = 2 * Math.PI * r;
 
-  if (!data.length) return <p className="py-10 text-center text-sm text-navy-400">No data yet.</p>;
+  if (!data.length) {
+    return <p className="py-10 text-center text-sm text-navy-400">{t("stat.noDataYet")}</p>;
+  }
 
   const segments = data.map((d, i) => {
     const fraction = d.value / total;
@@ -190,12 +197,14 @@ export function DonutChart({
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-2xl font-extrabold text-navy-900">
-            {hover !== null ? `${Math.round(segments[hover]!.fraction * 100)}%` : formatValue(total)}
-          </span>
-          <span className="max-w-[80%] truncate text-xs text-navy-400">
-            {hover !== null ? segments[hover]!.name : "Total"}
-          </span>
+          <>
+            <span className="font-display text-2xl font-extrabold text-navy-900">
+              {hover !== null ? `${Math.round(segments[hover]!.fraction * 100)}%` : formatValue(total)}
+            </span>
+            <span className="max-w-[80%] truncate text-xs text-navy-400">
+              {hover !== null ? segments[hover]!.name : t("stat.total")}
+            </span>
+          </>
         </div>
       </div>
       <ul className="w-full space-y-1.5">
@@ -224,8 +233,11 @@ export function BarList({
   data: { name: string; value: number }[];
   formatValue?: (v: number) => string;
 }) {
+  const { t } = useTranslation();
   const max = Math.max(1, ...data.map((d) => Math.abs(d.value)));
-  if (!data.length) return <p className="py-10 text-center text-sm text-navy-400">No data yet.</p>;
+  if (!data.length) {
+    return <p className="py-10 text-center text-sm text-navy-400">{t("stat.noDataYet")}</p>;
+  }
   return (
     <div className="space-y-3">
       {data.map((d, i) => (

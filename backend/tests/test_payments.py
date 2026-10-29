@@ -1,9 +1,11 @@
 import hashlib
 import hmac
+import json
 
 from tests.conftest import auth_headers, register_row
 
 from app.core.config import settings
+from app.services.payments.mmpay_client import MMPayClient
 
 
 def _pfx(client, email="paypax@test.com"):
@@ -167,6 +169,105 @@ def test_webhook_bad_signature_rejected(client, trip):
         "/api/v1/payments/webhooks/mock", content=body, headers={"X-Webhook-Signature": "deadbeef"}
     )
     assert wk.status_code == 400
+
+
+def _mmpay_configure(monkeypatch):
+    monkeypatch.setattr(settings, "mmpay_app_id", "app_test")
+    monkeypatch.setattr(settings, "mmpay_publishable_key", "pk_test_demo")
+    monkeypatch.setattr(settings, "mmpay_secret_key", "sk_test_demo")
+    monkeypatch.setattr(settings, "mmpay_base_url", "https://sandbox.myanmyanpay.com")
+    monkeypatch.setattr(settings, "mmpay_callback_url", "")
+
+
+def _mmpay_stub_post(monkeypatch, *, qr="MMQR-DEMO-PAYLOAD"):
+    calls = []
+
+    def fake_post(self, url, body_string, headers):
+        calls.append(url)
+        if "handshake" in url:
+            return {"token": "btoken-demo"}
+        if "create" in url:
+            return {
+                "status": "PENDING",
+                "qr": qr,
+                "transactionRefId": "TRX-DEMO",
+                "vendorQrRefId": "QR-DEMO",
+            }
+        return {}
+
+    monkeypatch.setattr(MMPayClient, "_post", fake_post)
+    return calls
+
+
+def _mmpay_sign(body: bytes, nonce: str) -> str:
+    return hmac.new(
+        settings.mmpay_secret_key.encode(), nonce.encode() + b"." + body, hashlib.sha256
+    ).hexdigest()
+
+
+def test_mmpay_initiate_returns_qr_and_webhook_confirms(client, trip, monkeypatch):
+    _mmpay_configure(monkeypatch)
+    _mmpay_stub_post(monkeypatch)
+
+    token = _pfx(client, "mmpay@test.com")
+    booking = _make_booking(client, trip, token)
+
+    r = _initiate(client, booking["id"], token, method="MMPAY")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["payment"]["method"] == "MMPAY"
+    assert body["payment"]["provider"] == "mmpay"
+    assert body["payment"]["status"] == "PROCESSING"
+    assert body["qr_payload"] == "MMQR-DEMO-PAYLOAD"
+    assert body["instructions"]
+
+    tx = body["payment"]["transaction_ref"]
+    nonce = "1700000000000"
+    payload = {
+        "orderId": tx,
+        "status": "SUCCESS",
+        "amount": booking["total_amount"],
+        "transactionRefId": "TRX-DEMO",
+        "vendorQrRefId": "QR-DEMO",
+        "method": "QR",
+    }
+    raw = json.dumps(payload).encode()
+    headers = {"X-Mmpay-Nonce": nonce, "X-Mmpay-Signature": _mmpay_sign(raw, nonce)}
+    wk = client.post("/api/v1/payments/webhooks/mmpay", content=raw, headers=headers)
+    assert wk.status_code == 200, wk.text
+    assert wk.json()["processed"] is True
+
+    detail = client.get(f"/api/v1/bookings/{booking['id']}", headers=auth_headers(token)).json()
+    assert detail["status"] == "CONFIRMED"
+    assert detail["has_ticket"] is True
+
+
+def test_mmpay_webhook_bad_signature_rejected(client, trip, monkeypatch):
+    _mmpay_configure(monkeypatch)
+    _mmpay_stub_post(monkeypatch)
+
+    token = _pfx(client, "mmpaybad@test.com")
+    booking = _make_booking(client, trip, token)
+    r = _initiate(client, booking["id"], token, method="MMPAY")
+    tx = r.json()["payment"]["transaction_ref"]
+
+    raw = json.dumps({"orderId": tx, "status": "SUCCESS"}).encode()
+    wk = client.post(
+        "/api/v1/payments/webhooks/mmpay",
+        content=raw,
+        headers={"X-Mmpay-Nonce": "1700", "X-Mmpay-Signature": "deadbeef"},
+    )
+    assert wk.status_code == 400
+
+
+def test_mmpay_unconfigured_is_rejected(client, trip, monkeypatch):
+    monkeypatch.setattr(settings, "mmpay_publishable_key", "")
+    monkeypatch.setattr(settings, "mmpay_secret_key", "")
+
+    token = _pfx(client, "mmpayoff@test.com")
+    booking = _make_booking(client, trip, token)
+    r = _initiate(client, booking["id"], token, method="MMPAY")
+    assert r.status_code == 400
 
 
 def test_cancel_confirmed_booking_requests_refund(client, db, trip, admin):

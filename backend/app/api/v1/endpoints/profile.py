@@ -8,13 +8,17 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user, get_db
 from app.core.exceptions import NotFoundError
+from app.models.booking import Booking
 from app.models.enums import NotificationType
 from app.models.misc import Notification
 from app.models.payment import Payment
+from app.models.ticket import Ticket
 from app.models.user import PassengerProfile, User
 from app.schemas.common import Message
 from app.schemas.passenger import NotificationOut, ProfileOut, ProfileUpdate
 from app.schemas.payment import PaymentOut
+from app.schemas.ticket import TicketOut
+from app.services import ticket_service
 
 router = APIRouter(prefix="/me", tags=["passenger"])
 
@@ -66,6 +70,22 @@ def my_payments(
     return db.scalars(
         select(Payment).where(Payment.user_id == user.id).order_by(Payment.created_at.desc()).limit(limit)
     ).all()
+
+
+@router.get("/tickets", response_model=list[TicketOut])
+def my_tickets(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    limit: int = Query(100, ge=1, le=200),
+):
+    tickets = db.scalars(
+        select(Ticket)
+        .join(Booking, Ticket.booking_id == Booking.id)
+        .where(Booking.user_id == user.id)
+        .order_by(Ticket.issued_at.desc())
+        .limit(limit)
+    ).all()
+    return [ticket_service.build_ticket_out(db, t) for t in tickets]
 
 
 @router.get("/notifications", response_model=list[NotificationOut])

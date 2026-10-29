@@ -1,0 +1,27 @@
+{
+  "payments": {
+    "loading": "Loading your payments",
+    "title": "Payments",
+    "subtitle": "Every payment you've made, with reference numbers for support.",
+    "stats": {
+      "count": "Payments made",
+      "totalPaid": "Total paid",
+      "methods": "Methods used"
+    },
+    "empty": {
+      "title": "No payments yet",
+      "description": "Once you pay for a booking, your receipts will appear here.",
+      "action": "Find trips"
+    },
+    "ref": "Ref {{ref}}",
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "SUCCEEDED": "Succeeded",
+      "FAILED": "Failed",
+      "CANCELLED": "Cancelled",
+      "REFUND_PENDING": "Refund pending",
+      "REFUNDED": "Refunded"
+    }
+  }
+}

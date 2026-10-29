@@ -79,6 +79,14 @@ class OperatorCreate(BaseModel):
     is_verified: bool = False
 
 
+class OperatorUpdate(BaseModel):
+    full_name: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    company_name: Optional[str] = Field(default=None, min_length=2, max_length=120)
+    license_number: Optional[str] = Field(default=None, max_length=64)
+    contact_phone: Optional[str] = Field(default=None, max_length=32)
+    is_verified: Optional[bool] = None
+
+
 class OperatorOut(ORMModel):
     id: str
     company_name: str

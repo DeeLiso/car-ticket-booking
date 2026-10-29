@@ -1,0 +1,135 @@
+{
+  "booking": {
+    "kicker": "Booking calendar",
+    "title": "Your trips, at a glance",
+    "subtitle": "Every trip you’ve booked shows up on its departure date. Pick a day to see the full details.",
+    "bookCta": "Book a trip",
+    "signInTitle": "Sign in to see your booking calendar",
+    "signInDesc": "Once you sign in, all of your reserved trips appear on the calendar on their travel dates.",
+    "signIn": "Sign in",
+    "findTrips": "Find trips",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "selectedDay": "Selected day",
+    "legend": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "tripCount_one": "{{count}} trip",
+    "tripCount_other": "{{count}} trips",
+    "noTripsOnDay": "No trips booked on this day.",
+    "showingLatest": "Showing your {{shown}} latest bookings of {{total}}.",
+    "myBookings": "My bookings",
+    "forFullList": "for the full list.",
+    "refLabel": "Ref {{ref}}",
+    "seatsCount_one": "{{count}} seat",
+    "seatsCount_other": "{{count}} seats",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "expired": "Expired",
+      "refund_pending": "Refund pending",
+      "refunded": "Refunded"
+    }
+  },
+  "checkout": {
+    "preparingSeatMap": "Preparing seat map…",
+    "title": "Book your trip",
+    "seatsAvailable_one": "{{count}} seat available",
+    "seatsAvailable_other": "{{count}} seats available",
+    "perSeatFrom": "from {{price}}/seat",
+    "stepper": {
+      "travelDetails": "Travel details",
+      "seatsPassengers": "Seats & passengers",
+      "passengerPayment": "Passenger & payment",
+      "detailsConfirm": "Details & confirm",
+      "stepOf": "Step {{current}} of {{total}}"
+    },
+    "passengers": "Passengers",
+    "passengersSubtitle": "How many travellers are on this trip?",
+    "fewerPassengers": "Fewer passengers",
+    "morePassengers": "More passengers",
+    "travellers_one": "{{count}} traveller",
+    "travellers_other": "{{count}} travellers",
+    "chooseSeats": "Choose your seats",
+    "selectedOf": "{{selected}} of {{total}} selected",
+    "passengerDetails": "Passenger details",
+    "seatLine": "Seat {{seat}} · {{price}}",
+    "fullName": "Full name",
+    "passengerName": "Passenger name",
+    "phone": "Phone",
+    "nrc": "National ID (NRC)",
+    "nrcPlaceholder": "e.g. 12/XXXX(N) 043210",
+    "contact": "Contact",
+    "contactName": "Contact name",
+    "contactPhone": "Contact phone",
+    "backToSeats": "Back to seat selection",
+    "pricingSummary": "Pricing summary",
+    "seatsSelected": "Seats selected",
+    "bookingFee": "Booking fee",
+    "included": "Included",
+    "total": "Total",
+    "nextStep": "Next step",
+    "confirmPay": "Confirm & pay",
+    "holdNote": "Booking holds your seats for 10 minutes; no charge until payment.",
+    "itinerary": "Itinerary",
+    "paxCount_one": "{{count}} passenger",
+    "paxCount_other": "{{count}} passengers",
+    "loadingTrip": "Loading trip details…",
+    "direct": "direct",
+    "date": "Date",
+    "bus": "Bus",
+    "type": "Type",
+    "operator": "Operator",
+    "info": {
+      "baggage": {
+        "title": "Baggage allowance",
+        "l1": "1 hand carry up to 7 kg",
+        "l2": "1 checked bag up to 20 kg",
+        "l3": "Extra baggage payable onboard"
+      },
+      "docs": {
+        "title": "Documents required",
+        "l1": "National ID (NRC) for every traveller",
+        "l2": "Phone number for ticket delivery",
+        "l3": "Show QR at boarding"
+      },
+      "cancel": {
+        "title": "Cancellation",
+        "l1": "Free changes before payment",
+        "l2": "Refund requests reviewed in 1–2 days",
+        "l3": "Track status from My bookings"
+      }
+    }
+  },
+  "seats": {
+    "driver": "══ Driver ══",
+    "legend": {
+      "available": "Available",
+      "vip": "VIP",
+      "selected": "Selected",
+      "pending": "Pending",
+      "booked": "Booked",
+      "blocked": "Blocked"
+    },
+    "hint": "Hover a seat to see its number and price. Green = available, gold = VIP, cyan = you, dim = taken.",
+    "showLegend": "Show seat legend",
+    "hideLegend": "Hide seat legend",
+    "accessible": "Accessible",
+    "category": {
+      "ordinary": "Ordinary",
+      "vip": "VIP",
+      "sleeper": "Sleeper"
+    },
+    "status": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "sold": "Sold",
+      "blocked": "Blocked"
+    }
+  }
+}

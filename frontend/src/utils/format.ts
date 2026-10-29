@@ -16,6 +16,17 @@ export function fmtDateTime(iso: string | null | undefined): string {
   });
 }
 
+/**
+ * Epoch time for a backend timestamp. Timestamps like `created_at` are stored as
+ * naive UTC ("2026-10-13T18:28:48"); JS would otherwise read that as local time,
+ * so force UTC when the string carries no offset.
+ */
+export function apiTime(iso: string | null | undefined): number {
+  if (!iso) return NaN;
+  const hasOffset = /(?:Z|[+-]\d{2}:?\d{2})$/.test(iso);
+  return new Date(hasOffset ? iso : `${iso}Z`).getTime();
+}
+
 export function fmtDate(iso: string | null | undefined): string {
   if (!iso) return "—";
   const d = new Date(iso);

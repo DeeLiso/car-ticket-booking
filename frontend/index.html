@@ -2,13 +2,323 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f3d2e" />
-    <title>TikeSho — Premium Car Ticket Booking</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Book premium car & express bus tickets across Myanmar - search trips, pick seats and pay online." />
+    <meta name="theme-color" content="#0f1b38" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="T-M-T" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      try {
+        var t = localStorage.getItem("tmax.theme") || "dark";
+        document.documentElement.classList.toggle("dark", t === "dark");
+        document.documentElement.style.colorScheme = t;
+        var lg = localStorage.getItem("tmax.lang");
+        if (lg !== "en" && lg !== "my") lg = "my";
+        document.documentElement.lang = lg;
+        document.documentElement.classList.toggle("font-en", lg === "en");
+      } catch (e) {}
+    </script>
+    <title>T-M-T | Premium Car Ticket Booking</title>
   </head>
   <body>
+    <style>
+      /* ===== T-M-T mobile loading screen (shown only below 768px) ===== */
+      #splash {
+        --road-w: min(240px, 68vw);
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        box-sizing: border-box;
+        padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+        min-height: 100vh;
+        min-height: 100dvh;
+        background:
+          radial-gradient(600px 380px at 50% -8%, rgba(7, 86, 184, 0.42), transparent 62%),
+          radial-gradient(500px 320px at 50% 108%, rgba(7, 86, 184, 0.25), transparent 58%),
+          radial-gradient(340px 220px at 88% 28%, rgba(36, 69, 224, 0.12), transparent 70%),
+          linear-gradient(180deg, #072052 0%, #061b49 42%, #04122e 100%);
+        font-family: "Noto Sans Myanmar", ui-sans-serif, system-ui, sans-serif;
+        transition: opacity 0.45s ease, visibility 0.45s ease;
+      }
+      #splash.hide {
+        opacity: 0;
+        visibility: hidden;
+      }
+      /* Tablet & desktop: never show, never block. The inline script also removes the node. */
+      @media (min-width: 768px) {
+        #splash { display: none !important; }
+      }
+
+      /* --- Logo --- */
+      .splash-logo-wrap {
+        position: relative;
+        margin-bottom: 30px;
+      }
+      .splash-halo {
+        position: absolute;
+        inset: -72px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 184, 0, 0.17) 0%, rgba(255, 122, 0, 0.06) 42%, transparent 70%);
+        animation: splashHaloIn 1.1s ease 0.15s both;
+        pointer-events: none;
+      }
+      .splash-logo {
+        position: relative;
+        display: block;
+        width: min(260px, 64vw);
+        height: auto;
+        max-height: 34vh;
+        object-fit: contain;
+        animation: splashLogoIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both, splashFloat 3.4s ease-in-out 1.05s infinite;
+      }
+      @keyframes splashLogoIn {
+        from {
+          opacity: 0;
+          transform: scale(0.85);
+          filter: drop-shadow(0 0 0 rgba(255, 184, 0, 0));
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+          filter: drop-shadow(0 0 18px rgba(255, 184, 0, 0.38)) drop-shadow(0 0 48px rgba(255, 184, 0, 0.16));
+        }
+      }
+      @keyframes splashFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      @keyframes splashHaloIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      /* --- Ambient particles --- */
+      .splash-particles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .splash-particles span {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        opacity: 0;
+        animation: splashParticle 7s ease-in-out infinite;
+      }
+      .splash-particles span:nth-child(1) { left: 12%; top: 18%; background: #ffb800; animation-delay: 0s; }
+      .splash-particles span:nth-child(2) { left: 84%; top: 24%; background: #6086f7; width: 3px; height: 3px; animation-delay: 1.1s; animation-duration: 8s; }
+      .splash-particles span:nth-child(3) { left: 22%; top: 74%; background: #6086f7; width: 3px; height: 3px; animation-delay: 2.3s; animation-duration: 9s; }
+      .splash-particles span:nth-child(4) { left: 76%; top: 78%; background: #ffb800; animation-delay: 3.2s; animation-duration: 7.5s; }
+      .splash-particles span:nth-child(5) { left: 8%; top: 48%; background: rgba(255, 184, 0, 0.7); width: 3px; height: 3px; animation-delay: 4s; animation-duration: 8.5s; }
+      .splash-particles span:nth-child(6) { left: 90%; top: 56%; background: rgba(96, 134, 247, 0.8); animation-delay: 0.6s; animation-duration: 9.5s; }
+      .splash-particles span:nth-child(7) { left: 32%; top: 12%; background: rgba(96, 134, 247, 0.7); width: 3px; height: 3px; animation-delay: 5s; animation-duration: 7.2s; }
+      .splash-particles span:nth-child(8) { left: 66%; top: 88%; background: rgba(255, 184, 0, 0.6); width: 3px; height: 3px; animation-delay: 2.8s; animation-duration: 8.8s; }
+      @keyframes splashParticle {
+        0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.2; }
+        50% { transform: translate3d(6px, -14px, 0); opacity: 0.65; }
+      }
+
+      /* --- Animated road --- */
+      .splash-road {
+        margin-bottom: 22px;
+      }
+      .road-surface {
+        position: relative;
+        width: var(--road-w);
+        height: 12px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: linear-gradient(90deg, rgba(7, 86, 184, 0.12), rgba(7, 86, 184, 0.38) 50%, rgba(7, 86, 184, 0.12));
+        box-shadow: inset 0 0 0 1px rgba(96, 134, 247, 0.22), 0 0 20px rgba(7, 86, 184, 0.18);
+      }
+      .road-markings {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        height: 2px;
+        margin-top: -1px;
+        background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.34) 0 12px, transparent 12px 24px);
+        animation: splashMarkings 0.65s linear infinite;
+      }
+      @keyframes splashMarkings {
+        from { background-position: 0 0; }
+        to { background-position: 24px 0; }
+      }
+      .road-streak {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 64px;
+        background: linear-gradient(90deg, transparent, rgba(255, 184, 0, 0.85) 42%, rgba(255, 255, 255, 0.55) 55%, transparent);
+        filter: blur(0.5px);
+        animation: splashStreak 1.9s linear infinite;
+      }
+      @keyframes splashStreak {
+        from { transform: translateX(-70px); }
+        to { transform: translateX(calc(var(--road-w) + 70px)); }
+      }
+
+      /* --- Progress bar (indeterminate — no fake percentage) --- */
+      .splash-progress {
+        width: min(220px, 60vw);
+        height: 4px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(7, 86, 184, 0.28);
+        box-shadow: inset 0 1px 2px rgba(4, 18, 46, 0.5);
+        margin-bottom: 26px;
+      }
+      .splash-progress-fill {
+        width: 42%;
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #ffb800, #ff7a00);
+        box-shadow: 0 0 12px rgba(255, 184, 0, 0.55);
+        animation: splashProgress 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+      }
+      @keyframes splashProgress {
+        from { transform: translateX(-110%); }
+        to { transform: translateX(245%); }
+      }
+
+      /* --- Texts --- */
+      .splash-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 0.01em;
+        animation: splashFadeUp 0.6s ease 0.7s both;
+      }
+      .splash-sub {
+        margin: 6px 0 0;
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.52);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        animation: splashFadeUp 0.6s ease 0.85s both;
+      }
+      @keyframes splashFadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Compact short screens (landscape phones) */
+      @media (max-height: 480px) {
+        .splash-logo { width: min(190px, 46vw); }
+        .splash-logo-wrap { margin-bottom: 16px; }
+        .splash-road { margin-bottom: 14px; }
+        .splash-progress { margin-bottom: 16px; }
+      }
+
+      /* Accessibility: honor reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .splash-logo,
+        .splash-halo,
+        .road-markings,
+        .road-streak,
+        .splash-progress-fill,
+        .splash-particles span,
+        .splash-title,
+        .splash-sub {
+          animation: none !important;
+        }
+        .splash-logo { opacity: 1; transform: none; }
+        .splash-halo { opacity: 1; transform: none; }
+        .road-streak { display: none; }
+        .splash-progress-fill { width: 100%; transform: none; opacity: 0.85; }
+        .splash-particles span { opacity: 0.3; }
+        .splash-title, .splash-sub { opacity: 1; transform: none; }
+      }
+    </style>
+    <div id="splash" role="status" aria-live="polite" aria-label="Loading T-M-T Car Ticket Booking">
+      <div class="splash-particles" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="splash-logo-wrap">
+        <div class="splash-halo" aria-hidden="true"></div>
+        <img src="/brand/tmt-logo-light.png" alt="T-M-T Car Ticket Booking" class="splash-logo" width="260" height="173" draggable="false" onerror="this.style.visibility='hidden'" />
+      </div>
+      <div class="splash-road" aria-hidden="true">
+        <div class="road-surface">
+          <div class="road-markings"></div>
+          <div class="road-streak"></div>
+        </div>
+      </div>
+      <div class="splash-progress" aria-hidden="true"><div class="splash-progress-fill"></div></div>
+      <p class="splash-title">Preparing Your Journey</p>
+      <p class="splash-sub">T-M-T Car Ticket Booking · v1.0.0</p>
+    </div>
     <div id="root"></div>
+    <script>
+      (function () {
+        var splash = document.getElementById("splash");
+        if (!splash) return;
+        /* Desktop / tablet: CSS already hides it — remove the node and skip all timers. */
+        if (window.matchMedia("(min-width: 768px)").matches) {
+          splash.remove();
+          return;
+        }
+        var done = false;
+        var ready = false;
+        var minElapsed = false;
+        function hide() {
+          if (done || !ready || !minElapsed) return;
+          done = true;
+          splash.classList.add("hide");
+          window.setTimeout(function () {
+            if (splash.parentNode) splash.remove();
+          }, 480);
+        }
+        function markReady() {
+          ready = true;
+          hide();
+        }
+        /* Real initialization signals: every resource loaded AND fonts ready. */
+        function onWindowLoad() {
+          if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(markReady, markReady);
+          } else {
+            markReady();
+          }
+        }
+        if (document.readyState === "complete") {
+          onWindowLoad();
+        } else {
+          window.addEventListener("load", onWindowLoad, { once: true });
+        }
+        /* Minimum display so the entrance animation can finish (not a fake progress timer). */
+        window.setTimeout(function () {
+          minElapsed = true;
+          hide();
+        }, 1400);
+        /* Absolute fallback — never trap the visitor. */
+        window.setTimeout(function () {
+          ready = true;
+          minElapsed = true;
+          hide();
+        }, 5000);
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

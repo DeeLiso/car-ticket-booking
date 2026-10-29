@@ -164,6 +164,12 @@ export interface BookingOut {
   ticket_id?: string | null;
 }
 
+export interface BookingsFeed {
+  items: BookingOut[];
+  new_count: number;
+  latest_created_at?: string | null;
+}
+
 export interface PassengerInput {
   seat_id: string;
   full_name: string;
@@ -201,6 +207,7 @@ export interface PaymentInitiateResponse {
   payment: PaymentOut;
   redirect_url?: string | null;
   instructions?: string | null;
+  qr_payload?: string | null;
   mock_confirm_token?: string | null;
 }
 
@@ -216,6 +223,27 @@ export interface TicketOut {
   seat_numbers: string[];
   trip?: BookingTripInfo | null;
   payment_status?: string | null;
+}
+
+export interface PassengerProfileOut {
+  id: string;
+  email: string;
+  full_name: string;
+  phone?: string | null;
+  role: Role;
+  id_number?: string | null;
+  address?: string | null;
+  emergency_contact?: string | null;
+}
+
+export interface NotificationOut {
+  id: string;
+  type: string;
+  title: string;
+  body?: string | null;
+  link?: string | null;
+  read_at?: string | null;
+  created_at: string;
 }
 
 export interface ValidateTicketResponse {
@@ -294,6 +322,20 @@ export interface OperatorTripRow {
   total_seats: number;
 }
 
+export interface AdminFleetRow {
+  bus_id: string;
+  bus_name: string;
+  registration_number: string;
+  bus_type: string;
+  layout: string;
+  seat_capacity: number;
+  is_active: boolean;
+  operator?: string | null;
+  origin?: string | null;
+  destination?: string | null;
+  latest_trip_at?: string | null;
+}
+
 export interface OperatorOut {
   id: string;
   company_name: string;
@@ -304,6 +346,14 @@ export interface OperatorOut {
   email?: string | null;
   full_name?: string | null;
   buses_count: number;
+}
+
+export interface OperatorUpdateInput {
+  full_name?: string;
+  company_name?: string;
+  license_number?: string | null;
+  contact_phone?: string | null;
+  is_verified?: boolean;
 }
 
 export interface OperatorCreateInput {
@@ -375,4 +425,52 @@ export interface AuditLogOut {
   ip_address?: string | null;
   detail?: Record<string, unknown> | null;
   created_at: string;
+}
+
+/* --------------------------------- cookies -------------------------------- */
+
+export interface CookieCategoryOut {
+  key: string;
+  name: string;
+  description: string;
+  required: boolean;
+  enabled_by_default: boolean;
+}
+
+export interface CookiePolicy {
+  version: string;
+  effective_date: string;
+  updated_date: string;
+  optional_categories: string[];
+  categories: CookieCategoryOut[];
+}
+
+export type OptionalCookieCategory = "functional" | "analytics" | "marketing";
+
+export interface CookieCategoryPrefs {
+  functional: boolean;
+  analytics: boolean;
+  marketing: boolean;
+}
+
+export type ConsentStatus = "ACCEPT_ALL" | "REJECT_ALL" | "CUSTOM";
+
+export interface CookieConsentInput {
+  visitor_id: string;
+  policy_version: string;
+  acknowledge?: boolean;
+  consent_status?: ConsentStatus;
+  categories?: CookieCategoryPrefs;
+  source?: string;
+}
+
+export interface CookieConsentRecord {
+  visitor_id: string;
+  policy_version: string;
+  acknowledged_version?: string | null;
+  acknowledged_at?: string | null;
+  consent_status?: string | null;
+  consent_categories?: Record<string, boolean> | null;
+  consent_at?: string | null;
+  consent_policy_version?: string | null;
 }

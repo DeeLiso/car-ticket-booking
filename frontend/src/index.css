@@ -1,19 +1,70 @@
+/* Global Myanmar Unicode font — imported ONCE here (not in components). */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Global font: Noto Sans Myanmar (Unicode) first everywhere — its Latin
+       glyphs keep English readable while Burmese uses the Myanmar subset. */
+    --font-display: "Noto Sans Myanmar", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Noto Sans Myanmar", ui-sans-serif, system-ui, sans-serif;
+  }
+  /* English-first mode (FontToggle): Latin typefaces lead, Burmese still
+     falls back to Noto Sans Myanmar. */
+  html.font-en {
+    --font-display: "Manrope", "Noto Sans Myanmar", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Inter", "Noto Sans Myanmar", ui-sans-serif, system-ui, sans-serif;
+  }
   html {
-    @apply scroll-smooth antialiased;
+    @apply antialiased;
+    /* Reserve the scrollbar track so the layout doesn't shift horizontally
+       the moment page content becomes tall enough to scroll (e.g. on refresh). */
+    scrollbar-gutter: stable;
+  }
+  /* Smooth scrolling only on desktop pointers — on touch browsers it makes
+     programmatic/focus scrolls (FAB taps, input focus, keyboard) glide and
+     jitter the page. */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  html,
+  body {
+    font-family: var(--font-body);
   }
   body {
-    @apply bg-white font-body text-ink;
+    @apply bg-white text-ink;
+  }
+  /* Form controls always inherit the global font */
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+  /* Mobile: hide the visual scrollbar (touch scroll still works) */
+  @media (max-width: 1023.98px) {
+    html {
+      scrollbar-width: none;
+      scrollbar-gutter: auto;
+    }
+    html::-webkit-scrollbar {
+      display: none;
+    }
   }
   h1,
   h2,
   h3,
   h4 {
     @apply font-display tracking-tight;
+    /* Myanmar diacritics stack tall — keep a safe minimum leading so
+       glyphs never clip inside headings (explicit leading-* utilities
+       still win where the design sets them). */
+    line-height: 1.35;
   }
   /* Visible focus for keyboard users on links & interactive elements */
   :focus-visible {
@@ -35,16 +86,28 @@
   .input {
     @apply w-full rounded-xl border border-navy-200 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink/40 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 disabled:cursor-not-allowed disabled:opacity-60;
   }
+  /* Custom chevron so native selects keep a comfortable inset from the edge. */
+  .input-select {
+    @apply cursor-pointer appearance-none bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.875rem center;
+    background-size: 1rem 1rem;
+  }
   .label {
     @apply mb-1.5 block text-sm font-medium text-ink/75;
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
   }
-  /* Primary action — royal blue */
+  /* Primary call-to-action — vibrant orange with a subtle gold edge */
   .btn-primary {
+    @apply btn bg-orange-500 text-white shadow-cta ring-1 ring-inset ring-accent-300/60 hover:bg-orange-600 hover:shadow-cta-lg focus-visible:ring-orange-400;
+  }
+  /* Secondary brand action — royal blue */
+  .btn-brand {
     @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700 focus-visible:ring-brand-500;
   }
+  /* Gold — reserved for status / premium accents */
   .btn-accent {
     @apply btn bg-accent-500 text-white hover:bg-accent-600 focus-visible:ring-accent-400;
   }
@@ -57,9 +120,21 @@
   .badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
-  /* Royal-blue gradient text for premium headings */
+  /* Blue → orange gradient text for premium headings */
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-400 to-accent-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-300 via-brand-200 to-orange-400 bg-clip-text text-transparent;
+  }
+  /* Small pill chip */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-navy-100 bg-white px-3 py-1 text-xs font-semibold text-navy-600;
+  }
+  /* Tech grid overlay for dark hero surfaces — fine slate lines + cyan major lines */
+  .bg-hero-grid {
+    background-image: linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+      linear-gradient(rgba(56, 189, 248, 0.22) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.22) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px, 280px 280px, 280px 280px;
   }
 }
 
@@ -84,4 +159,409 @@
 /* Smooth seat transitions */
 .seat-btn {
   transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+}
+
+/* Isometric 3D seat map */
+.iso-stage {
+  perspective: 1100px;
+}
+.iso-bus {
+  transform: rotateX(58deg) rotate(-45deg);
+  transform-style: preserve-3d;
+}
+.iso-tile {
+  transform-style: preserve-3d;
+}
+.iso-inner {
+  transform: rotate(45deg) rotateX(-58deg);
+}
+.iso-floor {
+  @apply rounded-3xl bg-gradient-to-b from-[#eaf0fb] to-[#d7e2f4]/70;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+.iso-seat {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+.iso-seat:hover {
+  transform: translateZ(10px);
+}
+/* Leaflet Routing Machine: routes are drawn on the map only - hide its itinerary control UI. */
+.leaflet-routing-container {
+  display: none;
+}
+.dark .iso-floor {
+  background: linear-gradient(180deg, #16213a 0%, #0f1830 100%);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+}
+
+/* ============ Dark theme + neon accents ============ */
+.dark body {
+  @apply bg-[#0b1220] text-[#e9eefb];
+}
+.dark .card {
+  @apply border-[#1f2d49] bg-[#111a2e];
+}
+.dark .surface-muted {
+  @apply border-[#1f2d49] bg-[#16213a];
+}
+.dark .input {
+  @apply border-[#2a3a5c] bg-[#0f1830] text-[#e9eefb] placeholder:text-[#5e7195] focus:border-brand-500 focus:ring-brand-500/25;
+}
+.dark .input-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23a8b9da' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+}
+.dark .label {
+  @apply text-[#a8b9da];
+}
+.dark .btn-ghost {
+  @apply border-[#2a3a5c] bg-[#16213a] text-[#e9eefb] hover:bg-[#1d2a45];
+}
+.dark .skeleton {
+  @apply bg-[#243252];
+}
+.dark .skeleton::after {
+  @apply bg-gradient-to-r from-transparent via-white/5 to-transparent;
+}
+
+/* recolor utility surfaces & text */
+.dark .bg-white {
+  background-color: #111a2e;
+}
+.dark .bg-white\/90 {
+  background-color: rgba(11, 18, 32, 0.86);
+}
+.dark .bg-white\/95 {
+  background-color: rgba(11, 18, 32, 0.93);
+}
+.dark .bg-cream {
+  background-color: #0e1730;
+}
+.dark .bg-navy-50 {
+  background-color: #1b2744;
+}
+.dark .bg-navy-100 {
+  background-color: #243252;
+}
+.dark .bg-navy-200 {
+  background-color: #34436a;
+}
+.dark .border-navy-50 {
+  border-color: #25334f;
+}
+.dark .border-navy-100 {
+  border-color: #1f2d49;
+}
+.dark .border-navy-200 {
+  border-color: #2a3a5c;
+}
+.dark .text-navy-950 {
+  color: #eef2fb;
+}
+.dark .text-navy-900 {
+  color: #e6ecfa;
+}
+.dark .text-navy-800 {
+  color: #d7e0f2;
+}
+.dark .text-navy-700 {
+  color: #c2cfe6;
+}
+.dark .text-navy-600 {
+  color: #a8b9da;
+}
+.dark .text-navy-500 {
+  color: #93a5c9;
+}
+.dark .text-ink {
+  color: #e9eefb;
+}
+
+/* soft neon brand tints (badges, active pills, seat highlights) */
+.dark .bg-brand-50 {
+  background-color: rgba(59, 98, 239, 0.16);
+}
+.dark .hover\:bg-brand-50:hover {
+  background-color: rgba(59, 98, 239, 0.16);
+}
+.dark .bg-brand-100 {
+  background-color: rgba(59, 98, 239, 0.22);
+}
+.dark .text-brand-700 {
+  color: #9db6ff;
+}
+.dark .text-brand-800 {
+  color: #b3c6ff;
+}
+.dark .border-brand-200 {
+  border-color: rgba(96, 134, 247, 0.35);
+}
+.dark .hover\:border-brand-200:hover {
+  border-color: rgba(96, 134, 247, 0.35);
+}
+.dark .bg-navy-900 {
+  background-color: #131c33;
+}
+
+/* neon glow on primary CTAs, logo badge & active highlights */
+.dark .btn-primary {
+  background-image: linear-gradient(135deg, #fb923c, #f97316);
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.5), 0 0 44px rgba(249, 115, 22, 0.2);
+}
+.dark .btn-primary:hover {
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.75), 0 0 64px rgba(249, 115, 22, 0.32);
+}
+.dark .btn-brand {
+  background-image: linear-gradient(135deg, #3b62ef, #2445e0);
+  box-shadow: 0 0 14px rgba(96, 134, 247, 0.45), 0 0 40px rgba(96, 134, 247, 0.18);
+}
+.dark .btn-accent {
+  box-shadow: 0 0 14px rgba(247, 168, 31, 0.35), 0 0 36px rgba(247, 168, 31, 0.15);
+}
+.dark .shadow-glow {
+  box-shadow: 0 0 0 1px rgba(96, 134, 247, 0.3), 0 0 24px rgba(96, 134, 247, 0.45);
+}
+.dark :focus-visible {
+  outline-color: #6d8dff;
+}
+.dark .seat-scroll::-webkit-scrollbar-thumb {
+  @apply bg-navy-600;
+}
+
+/* ============ Bottom navigation — glass bar + floating action button ============ */
+@keyframes bottom-nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.bottom-nav-anim {
+  animation: bottom-nav-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fab-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.fab-float {
+  animation: fab-float 3.6s ease-in-out infinite;
+}
+
+@keyframes quick-menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.quick-menu-pop {
+  transform-origin: bottom center;
+  animation: quick-menu-pop 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-anim,
+  .fab-float,
+  .quick-menu-pop {
+    animation: none !important;
+  }
+  .bottom-nav-anim,
+  .bottom-nav-anim * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============ Floating navbar — animated aurora glass ============ */
+.navbar-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  pointer-events: none;
+  isolation: isolate;
+}
+/* Subtle animated inner border glow (top highlight + blue bloom) */
+.navbar-aurora::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 28px rgba(49, 94, 251, 0.12);
+  animation: borderGlow 8s ease-in-out infinite alternate;
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(34px);
+  opacity: 0.42;
+  mix-blend-mode: screen;
+  will-change: transform;
+  animation: auroraFlow 22s ease-in-out infinite alternate;
+}
+.aurora-blob--blue {
+  top: -85%;
+  left: -12%;
+  width: 52%;
+  height: 240%;
+  background: radial-gradient(closest-side, rgba(49, 94, 251, 0.55), rgba(49, 94, 251, 0) 70%);
+  animation-duration: 20s;
+}
+.aurora-blob--violet {
+  top: -70%;
+  left: 24%;
+  width: 46%;
+  height: 220%;
+  background: radial-gradient(closest-side, rgba(128, 90, 213, 0.55), rgba(128, 90, 213, 0) 70%);
+  animation-duration: 26s;
+  animation-delay: -6s;
+}
+.aurora-blob--gold {
+  top: -60%;
+  left: 56%;
+  width: 38%;
+  height: 200%;
+  background: radial-gradient(closest-side, rgba(245, 185, 66, 0.38), rgba(245, 185, 66, 0) 70%);
+  animation-duration: 24s;
+  animation-delay: -11s;
+}
+.aurora-blob--cyan {
+  top: -40%;
+  left: 78%;
+  width: 34%;
+  height: 190%;
+  background: radial-gradient(closest-side, rgba(85, 214, 255, 0.4), rgba(85, 214, 255, 0) 70%);
+  animation-duration: 18s;
+  animation-delay: -4s;
+}
+/* Slow travelling reflection streak */
+.aurora-streak {
+  position: absolute;
+  top: -60%;
+  left: 0;
+  z-index: 1;
+  width: 18%;
+  height: 220%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(85, 214, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.08) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  filter: blur(10px);
+  opacity: 0;
+  transform: translate3d(-140%, 0, 0) skewX(-14deg);
+  will-change: transform, opacity;
+  animation: liquidReflection 13s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+@keyframes auroraFlow {
+  0% {
+    transform: translate3d(-10%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(8%, 6%, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(-4%, 10%, 0) scale(0.96);
+  }
+}
+@keyframes liquidReflection {
+  0%,
+  52% {
+    transform: translate3d(-140%, 0, 0) skewX(-14deg);
+    opacity: 0;
+  }
+  60% {
+    opacity: 0.5;
+  }
+  82% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(640%, 0, 0) skewX(-14deg);
+    opacity: 0;
+  }
+}
+@keyframes borderGlow {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 0.85;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob,
+  .aurora-streak,
+  .navbar-aurora::before {
+    animation: none !important;
+  }
+  .aurora-streak {
+    opacity: 0.22;
+    transform: translate3d(0, 0, 0) skewX(-14deg);
+  }
+}
+
+/* ============ Calendar — navy aurora card ============ */
+.calendar-aurora {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  isolation: isolate;
+}
+.calendar-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.4;
+  mix-blend-mode: screen;
+  will-change: transform;
+  animation: auroraFlow 30s ease-in-out infinite alternate;
+}
+.calendar-glow--blue {
+  top: -25%;
+  left: -15%;
+  width: 65%;
+  height: 70%;
+  background: radial-gradient(closest-side, rgba(49, 94, 251, 0.55), rgba(49, 94, 251, 0) 70%);
+}
+.calendar-glow--violet {
+  bottom: -30%;
+  right: -10%;
+  width: 60%;
+  height: 65%;
+  background: radial-gradient(closest-side, rgba(128, 90, 213, 0.5), rgba(128, 90, 213, 0) 70%);
+  animation-duration: 38s;
+  animation-delay: -9s;
+}
+.calendar-glow--gold {
+  top: 10%;
+  right: 15%;
+  width: 38%;
+  height: 45%;
+  background: radial-gradient(closest-side, rgba(245, 185, 66, 0.3), rgba(245, 185, 66, 0) 70%);
+  animation-duration: 26s;
+  animation-delay: -15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .calendar-glow {
+    animation: none !important;
+  }
 }

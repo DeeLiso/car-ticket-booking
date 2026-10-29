@@ -44,7 +44,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 export function Select({ error, className = "", children, ...rest }: SelectProps) {
   return (
     <select
-      className={`input ${error ? "border-red-400" : ""} cursor-pointer ${className}`}
+      className={`input input-select ${error ? "border-red-400" : ""} ${className}`}
       {...rest}
     >
       {children}

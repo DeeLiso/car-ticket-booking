@@ -1,0 +1,40 @@
+{
+  "fleet": {
+    "loading": "Loading buses",
+    "emptyTitle": "No buses yet",
+    "emptyDesc": "Buses will appear here once operators add them to the fleet.",
+    "routesTitle": "Fleet routes",
+    "routesSubtitle": "Leaflet Routing Machine · road routing for every bus",
+    "listTitle": "Fleet list",
+    "active": "Active",
+    "inactive": "Inactive",
+    "seatsBadge_one": "{{count}} seat",
+    "seatsBadge_other": "{{count}} seats",
+    "latestTrip": "Latest trip",
+    "noRoute": "No routed trip yet — assigning this bus to a trip will draw it on the map.",
+    "statsTotal": "Buses",
+    "statsActive": "Active",
+    "statsSeats": "Total seats",
+    "statsOperators": "Operators",
+    "statsRouted": "On route",
+    "searchPlaceholder": "Search bus, plate, operator or route…",
+    "clearSearch": "Clear search",
+    "filterLabel": "Filter by status",
+    "filterAll": "All statuses",
+    "filterActive": "Active only",
+    "filterInactive": "Inactive only",
+    "sortLabel": "Sort buses",
+    "sortName": "Name (A–Z)",
+    "sortSeats": "Most seats",
+    "sortRecent": "Recently on route",
+    "resultsCount": "{{count}} buses",
+    "clearFilters": "Clear filters",
+    "noResults": "No buses match your filters",
+    "noResultsHint": "Try a different name or plate, or clear the filters.",
+    "routesBadge": "{{count}} live"
+  },
+  "maps": {
+    "origin": "Origin",
+    "destination": "Destination"
+  }
+}

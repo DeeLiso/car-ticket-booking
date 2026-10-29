@@ -1,0 +1,26 @@
+{
+    "pwa":  {
+                "install":  {
+                                "title":  "Install T-M-T",
+                                "chromePrompt":  "Add T-M-T to your device for one-tap booking and offline access.",
+                                "iosPrompt":  "Tap Share, then Add to Home Screen to install.",
+                                "install":  "Install",
+                                "notNow":  "Not now",
+                                "dismissAria":  "Dismiss install prompt",
+                                "share":  "Share",
+                                "addToHome":  "Add to Home Screen"
+                            },
+                "offline":  {
+                                "message":  "You\u0027re offline — some features may be unavailable."
+                            },
+                "update":  {
+                               "available":  "A new version is available",
+                               "description":  "Reload to get the latest features and fixes.",
+                               "reload":  "Reload",
+                               "later":  "Later",
+                               "dismissAria":  "Dismiss update prompt",
+                               "ready":  "T-M-T is ready to work offline.",
+                               "readyDismiss":  "Dismiss"
+                           }
+            }
+}

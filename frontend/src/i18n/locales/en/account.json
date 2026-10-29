@@ -1,0 +1,57 @@
+{
+  "account": {
+    "loadingProfile": "Loading your profile",
+    "role": {
+      "admin": "Admin",
+      "operator": "Operator",
+      "passenger": "Passenger"
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Keep your contact and travel details up to date.",
+    "memberSince": "Member since {{when}}",
+    "personal": {
+      "title": "Personal details",
+      "subtitle": "Used on tickets and for boarding verification.",
+      "fullName": "Full name",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g. 09 123 456 789",
+      "email": "Email",
+      "emailHint": "Email is used to sign in and cannot be changed here.",
+      "idNumber": "National ID — optional",
+      "idPlaceholder": "e.g. 12/ABC(N)123456",
+      "emergency": "Emergency contact — optional",
+      "emergencyPlaceholder": "Name / phone",
+      "address": "Address — optional",
+      "addressPlaceholder": "City, township",
+      "save": "Save changes",
+      "nameRequired": "Please enter your full name.",
+      "saved": "Profile updated."
+    },
+    "security": {
+      "title": "Security",
+      "subtitle": "Change the password used to sign in.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "submit": "Update password",
+      "weak": "Password needs at least 8 characters, with a letter and a number.",
+      "mismatch": "New passwords do not match.",
+      "saved": "Password updated."
+    }
+  },
+  "notifications": {
+    "loading": "Loading your notifications",
+    "title": "Notifications",
+    "subtitleUnread_one": "{{count}} unread update.",
+    "subtitleUnread_other": "{{count}} unread updates.",
+    "subtitleCaughtUp": "You're all caught up.",
+    "markAllRead": "Mark all read",
+    "emptyTitle": "No notifications yet",
+    "emptyDescription": "Booking and payment updates will show up here.",
+    "unread": "Unread",
+    "view": "View →",
+    "markRead": "Mark read"
+  }
+}

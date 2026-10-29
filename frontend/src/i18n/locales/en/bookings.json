@@ -1,0 +1,158 @@
+{
+  "checkoutStatus": {
+    "PENDING": "Pending",
+    "CONFIRMED": "Confirmed",
+    "CANCELLED": "Cancelled",
+    "EXPIRED": "Expired",
+    "REFUND_PENDING": "Refund pending",
+    "REFUNDED": "Refunded"
+  },
+  "bookings": {
+    "loading": "Loading your bookings",
+    "title": "My bookings",
+    "subtitle": "Track, pay, and manage every trip you've reserved.",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "searchPlaceholder": "Search by reference, city, name…",
+    "empty": {
+      "title": "No bookings yet",
+      "description": "Search a route and reserve your first seat — it only takes a minute.",
+      "action": "Find trips",
+      "noMatchTitle": "No matching bookings",
+      "noMatchDescription": "Try a different search term.",
+      "noTabTitle": "No {{tab}} bookings",
+      "noTabDescription": "Nothing here right now."
+    },
+    "showing": "Showing your latest {{shown}} of {{total}} bookings.",
+    "row": {
+      "ref": "Ref {{ref}}",
+      "seats_one": "{{count}} seat",
+      "seats_other": "{{count}} seats",
+      "viewTicket": "View ticket →"
+    },
+    "detail": {
+      "title": "Booking {{ref}}",
+      "subtitle": "Placed {{when}}",
+      "trip": "Trip",
+      "tripUnavailable": "Trip details unavailable.",
+      "seatsTitle": "Seats & passengers",
+      "class": "Class",
+      "passenger": "Passenger",
+      "phone": "Phone",
+      "nationalId": "National ID",
+      "seat": "Seat",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "fees": "Fees",
+      "total": "Total",
+      "heldUntil": "Seats held until {{when}}.",
+      "payTitle": "Pay to confirm",
+      "ticketIssued": "Ticket already issued — view it →",
+      "scanTitle": "Scan to pay",
+      "scanHint": "Open KBZPay, WaveMoney, CB Pay — or any MMQR app — and scan the code.",
+      "waiting": "Waiting for payment…",
+      "payOtherWay": "Pay another way",
+      "confirmed": "✓ Payment confirmed",
+      "viewTicket": "View ticket",
+      "refundPending": "Refund requested. An operator will review and settle it shortly.",
+      "refunded": "This booking was fully refunded. Happy travels!",
+      "cancelButton": "Cancel booking",
+      "cancelPrompt": "Reason (optional)",
+      "cancelledToast": "Booking {{ref}} cancelled."
+    },
+    "methods": {
+      "MOCK": {
+        "name": "Demo instant pay",
+        "desc": "Simulates a successful mobile payment instantly."
+      },
+      "MMPAY": {
+        "name": "MyanMyanPay (MMQR)",
+        "desc": "Scan one QR with KBZPay, WaveMoney, CB Pay & more."
+      },
+      "KBZPAY": {
+        "name": "KBZ Pay",
+        "desc": "Pay with your KBZ Pay wallet."
+      },
+      "WAVEPAY": {
+        "name": "Wave Pay",
+        "desc": "Pay with your Wave Money."
+      },
+      "CBPAY": {
+        "name": "CB Pay",
+        "desc": "One-tap cardless via CB Pay."
+      },
+      "BANK_TRANSFER": {
+        "name": "Bank transfer",
+        "desc": "Bank counter transfer, reviewed manually."
+      }
+    }
+  },
+  "tickets": {
+    "loading": "Loading your ticket",
+    "loadingList": "Loading your tickets",
+    "title": "My tickets",
+    "subtitle": "All your issued e-tickets — open, download, or present at the gate.",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all": "All"
+    },
+    "empty": {
+      "title": "No tickets yet",
+      "description": "Tickets are issued automatically once a booking is confirmed and paid.",
+      "action": "Find trips",
+      "noTabTitle": "No {{tab}} tickets",
+      "noTabDescription": "Try a different tab."
+    },
+    "card": {
+      "label": "Ticket",
+      "from": "From",
+      "to": "To",
+      "passengers_one": "{{count}} passenger",
+      "passengers_other": "{{count}} passengers",
+      "viewTicket": "View ticket",
+      "openETicket": "Open e-ticket",
+      "pdf": "⬇ PDF"
+    },
+    "lookup": {
+      "title": "Look up a ticket",
+      "description": "Have a booking reference? Find its ticket directly, even if it isn't listed above.",
+      "placeholder": "Booking reference, e.g. BK-2026-000123",
+      "submit": "Look up",
+      "openTicket": "Open ticket {{number}} →"
+    },
+    "detail": {
+      "title": "Your e-ticket",
+      "subtitle": "Present the QR below at the boarding gate.",
+      "boardingPass": "Boarding pass",
+      "from": "From",
+      "to": "To",
+      "departure": "Departure",
+      "operator": "Operator",
+      "bus": "Bus",
+      "reg": "Reg.",
+      "passengersSeats": "Passengers & seats",
+      "bookingRef": "Booking ref",
+      "issued": "Issued",
+      "used": "Used",
+      "qrAlt": "QR for {{number}}",
+      "singleUse": "Single-use & tamper-evident",
+      "downloadPdf": "⬇ Download PDF",
+      "beforeBoard": "Before you board",
+      "tipEarly": "Arrive 20 minutes early.",
+      "tipQr": "Keep this QR ready on your phone.",
+      "tipId": "Carry a valid ID for verification.",
+      "scanOnce": "Scan happens once. A second scan will be flagged as already used."
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "USED": "Used",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded"
+    }
+  }
+}

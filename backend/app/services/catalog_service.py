@@ -202,7 +202,10 @@ def update_trip(db: Session, trip_id: str, payload: TripUpdate, *, operator_id: 
     arrival = data.get("arrival_at", trip.arrival_at)
     if arrival <= departure:
         raise ValidationError("arrival_at must be after departure_at")
-    if "departure_at" in data or "arrival_at" in data or "status" in data:
+    # Only re-check the bus schedule when the times actually change. Status-only
+    # updates (e.g. boarding, cancelling) must not be blocked by a pre-existing
+    # overlap, otherwise a trip could never leave that state.
+    if "departure_at" in data or "arrival_at" in data:
         _check_bus_conflict(db, trip.bus_id, departure, arrival, exclude_trip=trip.id)
 
     for field, value in data.items():

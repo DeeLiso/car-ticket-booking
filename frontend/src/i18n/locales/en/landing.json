@@ -1,0 +1,158 @@
+{
+  "landing": {
+    "hero": {
+      "badge": "Across Myanmar",
+      "title1": "Book your seat,",
+      "title2": "keep your plans.",
+      "description": "T-MAX-Tickets connects you to verified car & bus operators with real-time seat maps, honest prices, and tickets you can trust.",
+      "findTrip": "Find a trip",
+      "howItWorks": "How it works",
+      "atomicHolds": "Atomic seat holds",
+      "serverVerified": "Server-verified pricing",
+      "instantQr": "Instant QR tickets"
+    },
+    "advantages": {
+      "trustedRoutes": {
+        "label": "Trusted routes",
+        "text": "Coaches, express and sleeper buses on popular corridors."
+      },
+      "realTimeSeats": {
+        "label": "Real-time seats",
+        "text": "Live seat maps — what you see is exactly what you book."
+      },
+      "verifiedOperators": {
+        "label": "Verified operators",
+        "text": "Licensed, background-checked transport partners."
+      },
+      "securePayments": {
+        "label": "Secure payments",
+        "text": "HMAC-verified checkout in MMK and mobile wallets."
+      }
+    },
+    "popularDestinations": {
+      "title": "Popular destinations",
+      "subtitle": "Jump straight into a trip people actually take.",
+      "browseAll": "Browse all trips",
+      "from": "from",
+      "viewTrips": "View trips",
+      "regionFallback": "Popular"
+    },
+    "howItWorks": {
+      "title": "From search to seat in 4 steps",
+      "step1": {
+        "n": "01",
+        "t": "Search & compare",
+        "d": "Pick cities and date. Compare price, bus type and departure window in real time."
+      },
+      "step2": {
+        "n": "02",
+        "t": "Choose your exact seat",
+        "d": "See the live seat map with VIP and accessible rows marked clearly. Everything in MMK."
+      },
+      "step3": {
+        "n": "03",
+        "t": "Enter passenger details",
+        "d": "Add each traveller's full name, phone and National ID (NRC) — required to issue your ticket."
+      },
+      "step4": {
+        "n": "04",
+        "t": "Pay & get your ticket",
+        "d": "Secure payment confirms instantly. Your QR ticket appears in My bookings."
+      }
+    },
+    "features": {
+      "liveAvailability": {
+        "title": "Live availability",
+        "text": "Seat-level inventory backed by atomic holds — no overselling, ever. Refresh to see the real picture."
+      },
+      "digitalQr": {
+        "title": "Digital QR tickets",
+        "text": "Every confirmed booking issues an air-gapped digital ticket. Show the QR or PDF at the gate."
+      },
+      "secureCheckout": {
+        "title": "Secure checkout",
+        "text": "Prices are always derived server-side and payments are HMAC-verified. No surprises at the counter."
+      },
+      "fairCancellation": {
+        "title": "Fair cancellation",
+        "text": "Need to change plans? Cancel online and track your refund from request to settlement."
+      }
+    },
+    "cta": {
+      "title": "Your next journey starts here.",
+      "subtitle": "Reserve your exact seat in minutes with honest, server-verified pricing.",
+      "findTrip": "Find a trip"
+    },
+    "about": {
+      "badge": "Our story",
+      "title1": "Moving Myanmar,",
+      "title2": "one seat at a time.",
+      "description": "T-M-T is a modern car & bus ticketing platform built for how people actually travel. We connect passengers with verified operators through live seat maps, honest prices, and tickets you can trust.",
+      "findTrip": "Find a trip",
+      "talkToUs": "Talk to us",
+      "stats": {
+        "trips": "Trips published",
+        "cities": "Cities covered",
+        "operators": "Verified operators",
+        "support": "Support line"
+      },
+      "whyBuilt": {
+        "title": "Why we built it",
+        "p1": "Booking a journey used to mean phone calls, guesswork and a paper ticket you could lose. We set out to make it as simple as ordering a ride — clear options, a real seat map, and a confirmation you can hold in your hand.",
+        "p2": "Behind the scenes that means real engineering: atomic seat holds, server-verified fares, signed payments and an auditable trail for every operator and every ticket."
+      },
+      "values": {
+        "honestPricing": {
+          "t": "Honest pricing",
+          "d": "The price you see is the price you pay. Fares are always derived server-side — never the client."
+        },
+        "noOverselling": {
+          "t": "No overselling",
+          "d": "Atomic seat holds mean the seat you reserve is the seat you get. Inventory stays truthful."
+        },
+        "builtForMyanmar": {
+          "t": "Built for Myanmar",
+          "d": "Local routes, local operators, National ID (NRC) aware, and payments your travellers already use."
+        }
+      },
+      "services": {
+        "title": "Our services",
+        "subtitle": "Everything you need to plan, book and travel — from first search to final refund.",
+        "seatLevel": {
+          "title": "Seat-level booking",
+          "text": "Pick your exact seat from a live map with VIP and accessible rows clearly marked — no guessing."
+        },
+        "routeDiscovery": {
+          "title": "Route discovery",
+          "text": "Compare departure windows, durations and prices across every operator on your corridor."
+        },
+        "verifiedOperators": {
+          "title": "Verified operators",
+          "text": "We onboard licensed, background-checked transport partners and keep their fleets auditable."
+        },
+        "securePayments": {
+          "title": "Secure payments",
+          "text": "Server-verified pricing and HMAC-signed checkout in MMK and mobile wallets."
+        },
+        "digitalTickets": {
+          "title": "Digital tickets",
+          "text": "Every confirmed booking issues a QR ticket you can flash at the gate or download as PDF."
+        },
+        "refundsSupport": {
+          "title": "Refunds & support",
+          "text": "Cancel online and track your refund from request to settlement, with a real human on call."
+        }
+      },
+      "cta": {
+        "title": "Ready to ride with us?",
+        "subtitle": "Search live trips, grab your exact seat and travel with confidence.",
+        "findTrip": "Find a trip"
+      }
+    },
+    "notFound": {
+      "title": "This road ends here",
+      "description": "The page you’re looking for doesn’t exist or has moved.",
+      "backToHome": "Back to home"
+    }
+  }
+}

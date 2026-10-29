@@ -1,0 +1,48 @@
+{
+    "cookies":  {
+                    "banner":  {
+                                   "syncError":  "Your choices were saved on this device, but couldn\u0027t sync with the server.",
+                                   "dismiss":  "Dismiss"
+                               },
+                    "modal":  {
+                                  "preferencesTitle":  "Cookie preferences",
+                                  "noticeTitle":  "Cookie policy updated",
+                                  "preferencesSubtitle":  "Manage which cookies we use.",
+                                  "noticeSubtitle":  "We\u0027ve updated our cookie policy.",
+                                  "description":  "We use cookies to run the site, remember your preferences, and improve the booking experience. You can accept all cookies, reject optional cookies, or choose only the categories you\u0027re comfortable with.",
+                                  "policyVersion":  "Policy version",
+                                  "effective":  "Effective date",
+                                  "readPolicy":  "Read our cookie policy",
+                                  "acceptAll":  "Accept all cookies",
+                                  "customize":  "Customize settings",
+                                  "rejectOptional":  "Reject optional cookies",
+                                  "acknowledge":  "Acknowledge and continue",
+                                  "closePreferences":  "Close cookie preferences",
+                                  "closeNotice":  "Close cookie notice"
+                              },
+                    "preferences":  {
+                                        "description":  "Choose whether to allow optional cookies. Necessary cookies are always on because the site and booking security depend on them.",
+                                        "necessary":  {
+                                                          "name":  "Strictly necessary cookies",
+                                                          "description":  "Required for the site to work — sign-in, session security, and holding your seats while you book."
+                                                      },
+                                        "functional":  {
+                                                           "name":  "Functional cookies",
+                                                           "description":  "Remember your choices, such as your preferred city and booking details, to make the site easier to use."
+                                                       },
+                                        "analytics":  {
+                                                          "name":  "Analytics cookies",
+                                                          "description":  "Help us understand how the site is used and improve navigation, search, and the booking experience."
+                                                      },
+                                        "marketing":  {
+                                                          "name":  "Marketing cookies",
+                                                          "description":  "Used to show relevant offers and travel deals. We only use these if you allow them."
+                                                      },
+                                        "alwaysOn":  "Always on",
+                                        "save":  "Save my preferences",
+                                        "acceptAll":  "Accept all",
+                                        "rejectOptional":  "Reject optional"
+                                    },
+                    "settingsButton":  "Cookie settings"
+                }
+}

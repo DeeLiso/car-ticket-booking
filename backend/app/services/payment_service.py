@@ -30,6 +30,7 @@ from app.services.payments.providers import (
     BankTransferProvider,
     CBPayProvider,
     KBZPayProvider,
+    MMPayProvider,
     MockPaymentProvider,
     WavePayProvider,
 )
@@ -41,6 +42,7 @@ _PROVIDER_CLASSES = {
     PaymentMethod.KBZPAY: KBZPayProvider,
     PaymentMethod.WAVEPAY: WavePayProvider,
     PaymentMethod.CBPAY: CBPayProvider,
+    PaymentMethod.MMPAY: MMPayProvider,
     PaymentMethod.BANK_TRANSFER: BankTransferProvider,
 }
 
@@ -113,6 +115,7 @@ def initiate_payment(
     payment.provider_payload = {
         "instructions": result.instructions,
         "redirect_url": result.redirect_url,
+        "qr_payload": result.qr_payload,
     }
     db.commit()
     db.refresh(payment)
@@ -121,6 +124,7 @@ def initiate_payment(
         payment=PaymentOut.model_validate(payment),
         redirect_url=result.redirect_url,
         instructions=result.instructions,
+        qr_payload=result.qr_payload,
         mock_confirm_token=result.mock_token,
     )
 
@@ -289,7 +293,11 @@ def process_refund(db: Session, *, refund_id: str, admin: User) -> Refund:
     except PaymentError:
         # Manual/bank refunds and unconfigured providers are settled by the admin
         # recording the transfer reference offline; the state is authoritative.
-        if PaymentMethod(payment.method) not in (PaymentMethod.BANK_TRANSFER, PaymentMethod.MOCK):
+        if PaymentMethod(payment.method) not in (
+            PaymentMethod.BANK_TRANSFER,
+            PaymentMethod.MOCK,
+            PaymentMethod.MMPAY,
+        ):
             raise
 
     refund.status = RefundStatus.PROCESSED.value

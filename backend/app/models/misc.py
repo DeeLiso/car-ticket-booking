@@ -23,6 +23,37 @@ class Notification(Base, UUIDPk, TimestampMixin):
     read_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
 
+class CookieConsent(Base, UUIDPk, TimestampMixin):
+    """Server-side record of a visitor's cookie policy acknowledgement and consent.
+
+    Acknowledgement (they have seen the current policy version) is stored
+    separately from consent (which optional categories they allow) so the two
+    can evolve independently.
+    """
+
+    __tablename__ = "cookie_consents"
+    __table_args__ = (Index("ix_cookie_consents_visitor", "visitor_id"),)
+
+    visitor_id: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    user_id: Mapped[Optional[str]] = mapped_column(
+        String(32), ForeignKey("users.id", ondelete="SET NULL")
+    )
+    # Latest policy version the record relates to.
+    policy_version: Mapped[str] = mapped_column(String(16), nullable=False)
+    # Acknowledgement — the visitor has seen this policy version.
+    acknowledged_version: Mapped[Optional[str]] = mapped_column(String(16))
+    acknowledged_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    # Consent — which optional categories the visitor allows.
+    consent_status: Mapped[Optional[str]] = mapped_column(String(16))
+    consent_categories: Mapped[Optional[dict]] = mapped_column(JSON)
+    consent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    consent_policy_version: Mapped[Optional[str]] = mapped_column(String(16))
+    # Light-touch evidence for auditing (best-effort, never used as proof alone).
+    source: Mapped[Optional[str]] = mapped_column(String(32))
+    ip_address: Mapped[Optional[str]] = mapped_column(String(64))
+    user_agent: Mapped[Optional[str]] = mapped_column(String(255))
+
+
 class AuditLog(Base, UUIDPk, TimestampMixin):
     """Immutable audit trail for sensitive administrative actions."""
 

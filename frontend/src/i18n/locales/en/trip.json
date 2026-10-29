@@ -1,0 +1,36 @@
+{
+  "trip": {
+    "loading": "Loading trip…",
+    "findTrips": "Find trips",
+    "verified": "Verified",
+    "from": "from",
+    "seatsLeft_one": "{{count}} seat left",
+    "seatsLeft_other": "{{count}} seats left",
+    "chooseSeatTitle": "Choose a seat",
+    "chooseSeatSubtitle": "Exactly what you see is exactly what you get.",
+    "operatorLabel": "Operator",
+    "amenities": "Amenities",
+    "standardAmenities": "Standard amenities",
+    "bookCta": "Book this trip",
+    "bookNote": "You’ll pick exact seats at checkout. Holds expire automatically.",
+    "goodToKnowTitle": "Good to know",
+    "goodHold": "Seat holds last up to 10 minutes.",
+    "goodFees": "Prices include all standard fees.",
+    "goodTicket": "Digital tickets are issued on payment.",
+    "status": {
+      "scheduled": "Scheduled",
+      "boarding": "Boarding",
+      "departed": "Departed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "busType": {
+      "ac_seater": "AC seater",
+      "non_ac_seater": "Non-AC seater",
+      "ac_sleeper": "AC sleeper",
+      "non_ac_sleeper": "Non-AC sleeper",
+      "minibus": "Minibus",
+      "luxury": "Luxury"
+    }
+  }
+}

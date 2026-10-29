@@ -16,7 +16,7 @@ from app.models.enums import (  # noqa: F401
     UserStatus,
     ValidationOutcome,
 )
-from app.models.misc import AuditLog, Notification
+from app.models.misc import AuditLog, CookieConsent, Notification
 from app.models.payment import Payment, Refund
 from app.models.ticket import Ticket, TicketValidation
 from app.models.trip import Trip, TripSeatInventory
@@ -30,6 +30,7 @@ __all__ = [
     "Bus",
     "BusSeat",
     "City",
+    "CookieConsent",
     "Notification",
     "OperatorProfile",
     "PassengerProfile",

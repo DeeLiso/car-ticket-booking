@@ -9,6 +9,7 @@ from app.core.config import settings
 from app.core.exceptions import PaymentError
 from app.models.enums import PaymentMethod, PaymentStatus
 from app.services.payments.base import InitiationResult, PaymentProvider, WebhookEvent, _as_bytes
+from app.services.payments.mmpay_client import MMPayClient
 
 
 class MockPaymentProvider(PaymentProvider):
@@ -129,6 +130,101 @@ class CBPayProvider(_HostedRedirectProvider):
 
     def __init__(self) -> None:
         super().__init__(settings.cbpay_merchant_id, settings.cbpay_secret_key)
+
+
+class MMPayProvider(PaymentProvider):
+    """MyanMyanPay (MMPay) MMQR aggregator.
+
+    Server-side flow: ``/payments/handshake`` to obtain a per-order botken, then
+    ``/payments/create`` which returns an EMVCo QR string the passenger scans
+    with any MMQR-enabled wallet (KBZPay, WaveMoney, CB Pay, ...). Settlement is
+    confirmed asynchronously via the ``mmpay`` webhook.
+    """
+
+    name = "mmpay"
+    method = PaymentMethod.MMPAY
+    requires_webhook_signature = True
+
+    _STATUS_MAP = {
+        "PENDING": PaymentStatus.PROCESSING,
+        "SUCCESS": PaymentStatus.SUCCEEDED,
+        "FAILED": PaymentStatus.FAILED,
+        "REFUNDED": PaymentStatus.REFUNDED,
+        "EXPIRED": PaymentStatus.CANCELLED,
+        "CANCELLED": PaymentStatus.CANCELLED,
+    }
+
+    def is_configured(self) -> bool:
+        return bool(settings.mmpay_publishable_key and settings.mmpay_secret_key)
+
+    def _client(self) -> MMPayClient:
+        self._require_config()
+        return MMPayClient(
+            app_id=settings.mmpay_app_id,
+            publishable_key=settings.mmpay_publishable_key,
+            secret_key=settings.mmpay_secret_key,
+            base_url=settings.mmpay_base_url,
+        )
+
+    def _require_config(self) -> None:
+        if not self.is_configured():
+            raise PaymentError(
+                "MyanMyanPay is not configured. Set MMPAY_APP_ID, "
+                "MMPAY_PUBLISHABLE_KEY and MMPAY_SECRET_KEY."
+            )
+
+    def initiate(self, *, transaction_ref: str, amount: float, currency: str, **context) -> InitiationResult:
+        client = self._client()
+        data = client.create(
+            order_id=transaction_ref,
+            amount=amount,
+            callback_url=settings.mmpay_callback_url or None,
+            custom_message=context.get("booking_reference"),
+        )
+        qr = (
+            data.get("qr")
+            or data.get("qrPayload")
+            or data.get("emvqr")
+            or data.get("qrCode")
+        )
+        provider_ref = (
+            data.get("transactionRefId")
+            or data.get("vendorQrRefId")
+            or data.get("transaction_ref_id")
+        )
+        mode = "sandbox" if client.is_sandbox else "live"
+        return InitiationResult(
+            provider_ref=provider_ref,
+            qr_payload=qr,
+            instructions=(
+                f"Scan the QR code with any MMQR app (KBZPay, WaveMoney, CB Pay) "
+                f"to pay {amount:,.0f} {currency}. Your booking is confirmed once "
+                f"MyanMyanPay reports the payment. ({mode})"
+            ),
+        )
+
+    def parse_webhook(self, body, headers: Dict[str, str]) -> WebhookEvent:
+        self._require_config()
+        if not self.verify_signature(_as_bytes(body), headers):
+            raise PaymentError("Invalid MyanMyanPay webhook signature")
+        data = json.loads(body) if isinstance(body, (str, bytes)) else body
+        raw_status = str(data.get("status") or "PENDING").upper()
+        status = self._STATUS_MAP.get(raw_status, PaymentStatus.PROCESSING)
+        return WebhookEvent(
+            transaction_ref=data.get("orderId") or data.get("order_id") or data.get("transaction_ref"),
+            status=status,
+            provider_ref=data.get("transactionRefId") or data.get("vendorQrRefId"),
+            amount=float(data["amount"]) if data.get("amount") is not None else None,
+            raw=data,
+        )
+
+    def verify_signature(self, body: bytes, headers: Dict[str, str]) -> bool:
+        signature = headers.get("x-mmpay-signature") or headers.get("X-Mmpay-Signature")
+        nonce = headers.get("x-mmpay-nonce") or headers.get("X-Mmpay-Nonce")
+        if not signature or not nonce:
+            return False
+        client = self._client()
+        return client.verify_callback(body=body, nonce=nonce, signature=signature)
 
 
 class BankTransferProvider(PaymentProvider):

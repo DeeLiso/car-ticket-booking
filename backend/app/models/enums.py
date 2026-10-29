@@ -81,6 +81,7 @@ class PaymentMethod(StrEnum):
     KBZPAY = "KBZPAY"
     WAVEPAY = "WAVEPAY"
     CBPAY = "CBPAY"
+    MMPAY = "MMPAY"
     BANK_TRANSFER = "BANK_TRANSFER"
     MOCK = "MOCK"
 

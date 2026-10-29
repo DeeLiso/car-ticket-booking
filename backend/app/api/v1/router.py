@@ -5,6 +5,7 @@ from app.api.v1.endpoints import (
     auth,
     bookings,
     cities,
+    cookies,
     health,
     operator,
     payments,
@@ -23,5 +24,6 @@ api_router.include_router(bookings.router)
 api_router.include_router(payments.router)
 api_router.include_router(tickets.router)
 api_router.include_router(profile.router)
+api_router.include_router(cookies.router)
 api_router.include_router(operator.router)
 api_router.include_router(admin.router)
